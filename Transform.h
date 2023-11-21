@@ -1,11 +1,16 @@
 #pragma once
+#include <directxmath.h>
+#include <d3d11_4.h>
 #include "Vector3.h"
+
+using namespace DirectX;
 
 class Transform
 {
 public:
 	Transform();
 	~Transform();
+	void Update();
 
 	// Setters and Getters for position/rotation/scale
 	void SetPosition(Vector3 position) { _position = position; }
@@ -23,9 +28,17 @@ public:
 
 	Vector3 GetRotation() const { return _rotation; }
 
+	void SetParent(Transform* parent) { _parent = parent; }
+
+	XMMATRIX GetWorldMatrix() const { return XMLoadFloat4x4(&_world); }
+
 private:
 	Vector3 _position;
 	Vector3 _rotation;
 	Vector3 _scale;
+
+	XMFLOAT4X4 _world;
+
+	Transform* _parent;
 };
 

@@ -53,6 +53,7 @@ private:
 
 	vector<GameObject *> _gameObjects;
 
+
 	Camera * _camera = nullptr;
 	float _cameraOrbitRadius = 7.0f;
 	float _cameraOrbitRadiusMin = 2.0f;

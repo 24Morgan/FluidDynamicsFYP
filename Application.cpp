@@ -172,40 +172,44 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	noSpecMaterial.specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	noSpecMaterial.specularPower = 0.0f;
 	
+	Appearance* _appearance = new Appearance(planeGeometry, noSpecMaterial);
 	Transform* _transform = new Transform();
-	GameObject* gameObject = new GameObject("Floor", planeGeometry, noSpecMaterial, _transform);
+	GameObject* gameObject = new GameObject("Floor", _appearance, _transform);
 	_transform->SetPosition(0.0f, 0.0f, 0.0f);
 	_transform->SetScale(15.0f, 15.0f, 15.0f);
 	_transform->SetRotation(XMConvertToRadians(90.0f), 0.0f, 0.0f);
-	gameObject->SetTextureRV(_pGroundTextureRV);
+	_appearance->SetTextureRV(_pGroundTextureRV);
 
 	_gameObjects.push_back(gameObject);
 
 	for (auto i = 0; i < NUMBEROFCUBES; i++)
 	{
+		_appearance = new Appearance(cubeGeometry, shinyMaterial);
 		_transform = new Transform();
-		gameObject = new GameObject("Cube " + to_string(i), cubeGeometry, shinyMaterial, _transform);
+		gameObject = new GameObject("Cube " + to_string(i), _appearance, _transform);
 		_transform->SetScale(1.0f, 1.0f, 1.0f);
 		_transform->SetPosition(-3.0f + (i * 2.5f), 1.0f, 10.0f);
-		gameObject->SetTextureRV(_pTextureRV);
+		_appearance->SetTextureRV(_pTextureRV);
 
 		_gameObjects.push_back(gameObject);
 	}
 
 	//Sphere world space initialisation
+	_appearance = new Appearance(sphereGeometry, noSpecMaterial);
 	_transform = new Transform();
-	gameObject = new GameObject("Sphere", sphereGeometry, noSpecMaterial, _transform);
+	gameObject = new GameObject("Sphere", _appearance, _transform);
 	_transform->SetScale(0.5f, 0.5f, 0.5f);
 	_transform->SetPosition(3.0f, 1.0f, 10.0f);
-	gameObject->SetTextureRV(_pTextureRV);
+	_appearance->SetTextureRV(_pTextureRV);
 	_gameObjects.push_back(gameObject);
 
 	//Donut world space initialisation
+	_appearance = new Appearance(donutGeometry, shinyMaterial);
 	_transform = new Transform();
-	gameObject = new GameObject("Donut", donutGeometry, shinyMaterial, _transform);
+	gameObject = new GameObject("Donut", _appearance, _transform);
 	_transform->SetScale(0.5f, 0.5f, 0.5f);
 	_transform->SetPosition(-6.0f, 0.5f, 10.0f);
-	gameObject->SetTextureRV(_pTextureRV);
+	_appearance->SetTextureRV(_pTextureRV);
 	_gameObjects.push_back(gameObject);
 
 	return S_OK;
@@ -797,7 +801,7 @@ void Application::Draw()
 	for (auto gameObject : _gameObjects)
 	{
 		// Get render material
-		Material material = gameObject->GetMaterial();
+		Material material = gameObject->GetAppearance()->GetMaterial();
 
 		// Copy material to shader
 		cb.surface.AmbientMtrl = material.ambient;
@@ -805,12 +809,12 @@ void Application::Draw()
 		cb.surface.SpecularMtrl = material.specular;
 
 		// Set world matrix
-		cb.World = XMMatrixTranspose(gameObject->GetWorldMatrix());
+		cb.World = XMMatrixTranspose(gameObject->GetTransform()->GetWorldMatrix());
 
 		// Set texture
-		if (gameObject->HasTexture())
+		if (gameObject->GetAppearance()->HasTexture())
 		{
-			ID3D11ShaderResourceView * textureRV = gameObject->GetTextureRV();
+			ID3D11ShaderResourceView * textureRV = gameObject->GetAppearance()->GetTextureRV();
 			_pImmediateContext->PSSetShaderResources(0, 1, &textureRV);
 			cb.HasTexture = 1.0f;
 		}
