@@ -129,6 +129,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	basicLight.SpecularPower = 20.0f;
 	basicLight.LightVecW = XMFLOAT3(0.0f, 1.0f, -1.0f);
 
+
 	Geometry donutGeometry;
 	objMeshData = OBJLoader::Load("Assets/3DModels/donut.obj", _pd3dDevice);
 	donutGeometry.indexBuffer = objMeshData.IndexBuffer;
@@ -171,35 +172,39 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	noSpecMaterial.specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	noSpecMaterial.specularPower = 0.0f;
 	
-	GameObject* gameObject = new GameObject("Floor", planeGeometry, noSpecMaterial);
-	gameObject->SetPosition(0.0f, 0.0f, 0.0f);
-	gameObject->SetScale(15.0f, 15.0f, 15.0f);
-	gameObject->SetRotation(XMConvertToRadians(90.0f), 0.0f, 0.0f);
+	Transform* _transform = new Transform();
+	GameObject* gameObject = new GameObject("Floor", planeGeometry, noSpecMaterial, _transform);
+	_transform->SetPosition(0.0f, 0.0f, 0.0f);
+	_transform->SetScale(15.0f, 15.0f, 15.0f);
+	_transform->SetRotation(XMConvertToRadians(90.0f), 0.0f, 0.0f);
 	gameObject->SetTextureRV(_pGroundTextureRV);
 
 	_gameObjects.push_back(gameObject);
 
 	for (auto i = 0; i < NUMBEROFCUBES; i++)
 	{
-		gameObject = new GameObject("Cube " + to_string(i), cubeGeometry, shinyMaterial);
-		gameObject->SetScale(1.0f, 1.0f, 1.0f);
-		gameObject->SetPosition(-3.0f + (i * 2.5f), 1.0f, 10.0f);
+		_transform = new Transform();
+		gameObject = new GameObject("Cube " + to_string(i), cubeGeometry, shinyMaterial, _transform);
+		_transform->SetScale(1.0f, 1.0f, 1.0f);
+		_transform->SetPosition(-3.0f + (i * 2.5f), 1.0f, 10.0f);
 		gameObject->SetTextureRV(_pTextureRV);
 
 		_gameObjects.push_back(gameObject);
 	}
 
 	//Sphere world space initialisation
-	gameObject = new GameObject("Sphere", sphereGeometry, noSpecMaterial);
-	gameObject->SetScale(0.5f, 0.5f, 0.5f);
-	gameObject->SetPosition(3.0f, 1.0f, 10.0f);
+	_transform = new Transform();
+	gameObject = new GameObject("Sphere", sphereGeometry, noSpecMaterial, _transform);
+	_transform->SetScale(0.5f, 0.5f, 0.5f);
+	_transform->SetPosition(3.0f, 1.0f, 10.0f);
 	gameObject->SetTextureRV(_pTextureRV);
 	_gameObjects.push_back(gameObject);
 
 	//Donut world space initialisation
-	gameObject = new GameObject("Donut", donutGeometry, shinyMaterial);
-	gameObject->SetScale(0.5f, 0.5f, 0.5f);
-	gameObject->SetPosition(-6.0f, 0.5f, 10.0f);
+	_transform = new Transform();
+	gameObject = new GameObject("Donut", donutGeometry, shinyMaterial, _transform);
+	_transform->SetScale(0.5f, 0.5f, 0.5f);
+	_transform->SetPosition(-6.0f, 0.5f, 10.0f);
 	gameObject->SetTextureRV(_pTextureRV);
 	_gameObjects.push_back(gameObject);
 
@@ -690,16 +695,16 @@ void Application::Cleanup()
 
 void Application::moveForward(int objectNumber)
 {
-	Vector3 position = _gameObjects[objectNumber]->GetPosition();
+	Vector3 position = _gameObjects[objectNumber]->GetTransform()->GetPosition();
 	position.z -= 0.02f;
-	_gameObjects[objectNumber]->SetPosition(position);
+	_gameObjects[objectNumber]->GetTransform()->SetPosition(position);
 }
 
 void Application::moveBackward(int objectNumber)
 {
-	Vector3 position = _gameObjects[objectNumber-2]->GetPosition();
+	Vector3 position = _gameObjects[objectNumber-2]->GetTransform()->GetPosition();
 	position.z += 0.02f;
-	_gameObjects[objectNumber-2]->SetPosition(position);
+	_gameObjects[objectNumber-2]->GetTransform()->SetPosition(position);
 }
 
 void Application::Update()
