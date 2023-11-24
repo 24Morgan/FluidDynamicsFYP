@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #define NUMBEROFCUBES 2
+#define FPS 1.0f/60.0f
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -717,57 +718,56 @@ void Application::moveBackward(int objectNumber)
 
 void Application::Update()
 {
-    // Update our time
-    /*static float timeSinceStart = 0.0f;
-    static DWORD dwTimeStart = 0;
+	//Update time
+	static float accumulator = 0.0f;
+	accumulator += _timer->GetDeltaTime();
 
-    DWORD dwTimeCur = GetTickCount64();
-
-    if (dwTimeStart == 0)
-        dwTimeStart = dwTimeCur;
-
-	timeSinceStart = (dwTimeCur - dwTimeStart) / 1000.0f;*/
-
-	_timer->Tick();
-
-	/*std::string output;*/
-
-	// Move gameobject
-	if (GetAsyncKeyState('1'))
-	{
-		moveForward(1);
-	}
-	if (GetAsyncKeyState('2'))
-	{
-		moveForward(2);
-	}
-	if (GetAsyncKeyState('3'))
-	{
-		moveBackward(3);
-	}
-	if (GetAsyncKeyState('4'))
-	{
-		moveBackward(4);
-	}
-	// Update camera
-	float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
-
-	float x = _cameraOrbitRadius * cos(angleAroundZ);
-	float z = _cameraOrbitRadius * sin(angleAroundZ);
-
-	XMFLOAT3 cameraPos = _camera->GetPosition();
-	cameraPos.x = x;
-	cameraPos.z = z;
-
-	_camera->SetPosition(cameraPos);
-	_camera->Update();
-
-	// Update objects
-	for (auto gameObject : _gameObjects)
-	{
-		gameObject->Update(_timer->GetDeltaTime());
-	}
+	while (accumulator >= FPS)
+	{ 
 	
+		// Move gameobject
+		if (GetAsyncKeyState('1'))
+		{
+			moveForward(1);
+		}
+		if (GetAsyncKeyState('2'))
+		{
+			moveForward(2);
+		}
+		if (GetAsyncKeyState('3'))
+		{
+			moveBackward(3);
+		}
+		if (GetAsyncKeyState('4'))
+		{
+			moveBackward(4);
+		}
+		//Output FPS
+		std::string deltaString = std::to_string(_timer->GetDeltaTime());
+		OutputDebugStringA(deltaString.c_str());
+		// Update camera
+		float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
+	
+		float x = _cameraOrbitRadius * cos(angleAroundZ);
+		float z = _cameraOrbitRadius * sin(angleAroundZ);
+	
+		XMFLOAT3 cameraPos = _camera->GetPosition();
+		cameraPos.x = x;
+		cameraPos.z = z;
+	
+		_camera->SetPosition(cameraPos);
+		_camera->Update();
+
+		// Update objects
+		for (auto gameObject : _gameObjects)
+		{
+			gameObject->Update(FPS);
+		}
+	
+		// Update our time
+		_timer->Tick();
+		accumulator -= FPS;
+	}
 }
 
 void Application::Draw()
