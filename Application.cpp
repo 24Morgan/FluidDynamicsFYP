@@ -742,9 +742,14 @@ void Application::Update()
 		{
 			moveBackward(4);
 		}
-		//Output FPS
-		std::string deltaString = std::to_string(_timer->GetDeltaTime());
-		OutputDebugStringA(deltaString.c_str());
+
+		//Output deltaTime
+		DebugPrintF("deltaTime is %f \n", accumulator);
+
+		//Get reciprocal of FPS and output it - dividing by 'FPS' was outputting deltaTime so its now calculated at compile-time using static, not run-time
+		float reciprocalFPS = 1.0f / static_cast<float>(FPS);
+		DebugPrintF("FPS is %f \n", reciprocalFPS);
+
 		// Update camera
 		float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
 	
