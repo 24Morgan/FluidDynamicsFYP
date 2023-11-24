@@ -5,6 +5,7 @@
 
 using namespace DirectX;
 
+//Handles any properties surrounding the transformations of an object
 class Transform
 {
 public:

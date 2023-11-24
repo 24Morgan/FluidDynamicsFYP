@@ -130,47 +130,47 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	basicLight.LightVecW = XMFLOAT3(0.0f, 1.0f, -1.0f);
 
 
-	Geometry donutGeometry;
+	std::shared_ptr<Geometry> donutGeometry = std::make_shared<Geometry>();
 	objMeshData = OBJLoader::Load("Assets/3DModels/donut.obj", _pd3dDevice);
-	donutGeometry.indexBuffer = objMeshData.IndexBuffer;
-	donutGeometry.numberOfIndices = objMeshData.IndexCount;
-	donutGeometry.vertexBuffer = objMeshData.VertexBuffer;
-	donutGeometry.vertexBufferOffset = objMeshData.VBOffset;
-	donutGeometry.vertexBufferStride = objMeshData.VBStride;
+	donutGeometry->indexBuffer = objMeshData.IndexBuffer;
+	donutGeometry->numberOfIndices = objMeshData.IndexCount;
+	donutGeometry->vertexBuffer = objMeshData.VertexBuffer;
+	donutGeometry->vertexBufferOffset = objMeshData.VBOffset;
+	donutGeometry->vertexBufferStride = objMeshData.VBStride;
 	
-	Geometry cubeGeometry;
-	cubeGeometry.indexBuffer = _pIndexBuffer;
-	cubeGeometry.vertexBuffer = _pVertexBuffer;
-	cubeGeometry.numberOfIndices = 36;
-	cubeGeometry.vertexBufferOffset = 0;
-	cubeGeometry.vertexBufferStride = sizeof(SimpleVertex);
+	std::shared_ptr<Geometry> cubeGeometry = std::make_shared<Geometry>();
+	cubeGeometry->indexBuffer = _pIndexBuffer;
+	cubeGeometry->vertexBuffer = _pVertexBuffer;
+	cubeGeometry->numberOfIndices = 36;
+	cubeGeometry->vertexBufferOffset = 0;
+	cubeGeometry->vertexBufferStride = sizeof(SimpleVertex);
 
-	Geometry sphereGeometry;
+	std::shared_ptr<Geometry> sphereGeometry = std::make_shared<Geometry>();
 	objMeshData = OBJLoader::Load("Assets/3DModels/sphere.txt", _pd3dDevice);
-	sphereGeometry.indexBuffer = objMeshData.IndexBuffer;
-	sphereGeometry.numberOfIndices = objMeshData.IndexCount;
-	sphereGeometry.vertexBuffer = objMeshData.VertexBuffer;
-	sphereGeometry.vertexBufferOffset = objMeshData.VBOffset;
-	sphereGeometry.vertexBufferStride = objMeshData.VBStride;
+	sphereGeometry->indexBuffer = objMeshData.IndexBuffer;
+	sphereGeometry->numberOfIndices = objMeshData.IndexCount;
+	sphereGeometry->vertexBuffer = objMeshData.VertexBuffer;
+	sphereGeometry->vertexBufferOffset = objMeshData.VBOffset;
+	sphereGeometry->vertexBufferStride = objMeshData.VBStride;
 
-	Geometry planeGeometry;
-	planeGeometry.indexBuffer = _pPlaneIndexBuffer;
-	planeGeometry.vertexBuffer = _pPlaneVertexBuffer;
-	planeGeometry.numberOfIndices = 6;
-	planeGeometry.vertexBufferOffset = 0;
-	planeGeometry.vertexBufferStride = sizeof(SimpleVertex);
+	std::shared_ptr<Geometry> planeGeometry = std::make_shared<Geometry>();
+	planeGeometry->indexBuffer = _pPlaneIndexBuffer;
+	planeGeometry->vertexBuffer = _pPlaneVertexBuffer;
+	planeGeometry->numberOfIndices = 6;
+	planeGeometry->vertexBufferOffset = 0;
+	planeGeometry->vertexBufferStride = sizeof(SimpleVertex);
 
-	Material shinyMaterial;
-	shinyMaterial.ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	shinyMaterial.diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	shinyMaterial.specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	shinyMaterial.specularPower = 10.0f;
+	std::shared_ptr<Material> shinyMaterial = std::make_shared<Material>();
+	shinyMaterial->ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	shinyMaterial->diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	shinyMaterial->specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	shinyMaterial->specularPower = 10.0f;
 
-	Material noSpecMaterial;
-	noSpecMaterial.ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
-	noSpecMaterial.diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	noSpecMaterial.specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	noSpecMaterial.specularPower = 0.0f;
+	std::shared_ptr<Material> noSpecMaterial = std::make_shared<Material>();
+	noSpecMaterial->ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+	noSpecMaterial->diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	noSpecMaterial->specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	noSpecMaterial->specularPower = 0.0f;
 	
 	Appearance* _appearance = new Appearance(planeGeometry, noSpecMaterial);
 	Transform* _transform = new Transform();
@@ -801,12 +801,12 @@ void Application::Draw()
 	for (auto gameObject : _gameObjects)
 	{
 		// Get render material
-		Material material = gameObject->GetAppearance()->GetMaterial();
+		std::shared_ptr<Material> material = gameObject->GetAppearance()->GetMaterial();
 
 		// Copy material to shader
-		cb.surface.AmbientMtrl = material.ambient;
-		cb.surface.DiffuseMtrl = material.diffuse;
-		cb.surface.SpecularMtrl = material.specular;
+		cb.surface.AmbientMtrl = material->ambient;
+		cb.surface.DiffuseMtrl = material->diffuse;
+		cb.surface.SpecularMtrl = material->specular;
 
 		// Set world matrix
 		cb.World = XMMatrixTranspose(gameObject->GetTransform()->GetWorldMatrix());
