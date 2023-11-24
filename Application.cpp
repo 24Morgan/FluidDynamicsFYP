@@ -77,6 +77,7 @@ Application::Application()
 	RSCullNone = nullptr;
 	 _WindowHeight = 0;
 	 _WindowWidth = 0;
+	 _timer = new Timer();
 }
 
 Application::~Application()
@@ -695,6 +696,9 @@ void Application::Cleanup()
 			delete gameObject;
 		}
 	}
+
+	delete _timer;
+
 }
 
 void Application::moveForward(int objectNumber)
@@ -714,7 +718,7 @@ void Application::moveBackward(int objectNumber)
 void Application::Update()
 {
     // Update our time
-    static float timeSinceStart = 0.0f;
+    /*static float timeSinceStart = 0.0f;
     static DWORD dwTimeStart = 0;
 
     DWORD dwTimeCur = GetTickCount64();
@@ -722,7 +726,11 @@ void Application::Update()
     if (dwTimeStart == 0)
         dwTimeStart = dwTimeCur;
 
-	timeSinceStart = (dwTimeCur - dwTimeStart) / 1000.0f;
+	timeSinceStart = (dwTimeCur - dwTimeStart) / 1000.0f;*/
+
+	_timer->Tick();
+
+	/*std::string output;*/
 
 	// Move gameobject
 	if (GetAsyncKeyState('1'))
@@ -757,8 +765,9 @@ void Application::Update()
 	// Update objects
 	for (auto gameObject : _gameObjects)
 	{
-		gameObject->Update(timeSinceStart);
+		gameObject->Update(_timer->GetDeltaTime());
 	}
+	
 }
 
 void Application::Draw()

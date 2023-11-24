@@ -7,7 +7,8 @@ GameObject::GameObject(string type, Appearance* appearance, Transform* transform
 
 GameObject::~GameObject()
 {
-
+	_appearance = nullptr;
+	_transform = nullptr;
 }
 
 void GameObject::Update(float t)
