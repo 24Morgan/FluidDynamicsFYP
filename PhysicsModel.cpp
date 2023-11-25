@@ -7,7 +7,7 @@ PhysicsModel::PhysicsModel(Transform* transform) : _transform(transform)
 
 PhysicsModel::~PhysicsModel()
 {
-	_transform = nullptr;
+	delete _transform;
 }
 
 void PhysicsModel::Update(float deltaTime)

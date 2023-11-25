@@ -10,7 +10,7 @@ Transform::Transform()
 
 Transform::~Transform()
 {
-	_parent = nullptr;
+	delete _parent;
 }
 
 void Transform::Update()

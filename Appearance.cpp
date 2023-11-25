@@ -7,9 +7,9 @@ Appearance::Appearance(std::shared_ptr<Geometry> geometry, std::shared_ptr <Mate
 
 Appearance::~Appearance()
 {
-	_textureRV = nullptr;
-	_geometry = nullptr;
-	_material = nullptr;
+	delete _textureRV;
+	_geometry.reset();
+	_material.reset();
 }
 
 void Appearance::Draw(ID3D11DeviceContext* pImmediateContext)

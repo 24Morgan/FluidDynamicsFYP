@@ -5,15 +5,15 @@ class PhysicsModel
 {
 public:
 	PhysicsModel(Transform* transform);
-	~PhysicsModel();
+	virtual ~PhysicsModel();
 
-	void Update(float deltaTime);
+	virtual void Update(float deltaTime) = 0;
 
-	void SetVelocity(Vector3 newVelocity);
-	Vector3 GetVelocity();
+	virtual void SetVelocity(Vector3 newVelocity);
+	virtual Vector3 GetVelocity();
 
-	void SetAcceleration(Vector3 newAcceleration);
-	Vector3 GetAcceleration();
+	virtual void SetAcceleration(Vector3 newAcceleration);
+	virtual Vector3 GetAcceleration();
 
 private:
 

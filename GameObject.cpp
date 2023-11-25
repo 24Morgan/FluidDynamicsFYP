@@ -2,19 +2,19 @@
 
 GameObject::GameObject(string type, Appearance* appearance, Transform* transform) : _type(type), _appearance(appearance), _transform(transform)
 {
-	_physicsModel = new PhysicsModel(transform);
+	_particleModel = new ParticleModel(transform);
 }
 
 GameObject::~GameObject()
 {
-	_appearance = nullptr;
-	_transform = nullptr;
-	_physicsModel = nullptr;
+	delete _appearance;
+	delete _transform;
+	delete _particleModel;
 }
 
 void GameObject::Update(float t)
 {
-	_physicsModel->Update(t);
+	_particleModel->Update(t);
 	_transform->Update();
 }
 

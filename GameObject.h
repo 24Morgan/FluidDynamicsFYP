@@ -8,6 +8,7 @@
 #include "Transform.h"
 #include "Appearance.h"
 #include "PhysicsModel.h"
+#include "ParticleModel.h"
 
 using namespace DirectX;
 using namespace std;
@@ -22,7 +23,7 @@ public:
 
 	Transform* GetTransform() const { return _transform; }
 	Appearance* GetAppearance() const { return _appearance; }
-	PhysicsModel* GetPhysicsModel() const { return _physicsModel; }
+	PhysicsModel* GetPhysicsModel() const { return _particleModel; }		//_particleModel may need to be swapped
 
 	void Update(float t);
 	void Draw(ID3D11DeviceContext * pImmediateContext);
@@ -32,7 +33,8 @@ private:
 
 	Transform* _transform;
 	Appearance* _appearance;
-	PhysicsModel* _physicsModel;
+
+	PhysicsModel* _particleModel;
 
 };
 
