@@ -214,9 +214,6 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	_appearance->SetTextureRV(_pTextureRV);
 	_gameObjects.push_back(gameObject);
 
-	_gameObjects[3]->GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0));
-	_gameObjects[3]->GetPhysicsModel()->SetAcceleration(Vector3(0, -0.1, 0));
-
 	return S_OK;
 }
 
@@ -707,16 +704,12 @@ void Application::Cleanup()
 
 void Application::moveForward(int objectNumber)
 {
-	Vector3 position = _gameObjects[objectNumber]->GetTransform()->GetPosition();
-	position.z -= 0.02f;
-	_gameObjects[objectNumber]->GetTransform()->SetPosition(position);
+	_gameObjects[objectNumber]->GetPhysicsModel()->AddForce(Vector3(0, 0, -1.0f));
 }
 
 void Application::moveBackward(int objectNumber)
 {
-	Vector3 position = _gameObjects[objectNumber-2]->GetTransform()->GetPosition();
-	position.z += 0.02f;
-	_gameObjects[objectNumber-2]->GetTransform()->SetPosition(position);
+	_gameObjects[objectNumber-2]->GetPhysicsModel()->AddForce(Vector3(0, 0, 1.0f));
 }
 
 void Application::Update()
