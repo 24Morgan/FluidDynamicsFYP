@@ -214,6 +214,9 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	_appearance->SetTextureRV(_pTextureRV);
 	_gameObjects.push_back(gameObject);
 
+	_gameObjects[3]->GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0));
+	_gameObjects[3]->GetPhysicsModel()->SetAcceleration(Vector3(0, -0.1, 0));
+
 	return S_OK;
 }
 
@@ -748,7 +751,7 @@ void Application::Update()
 
 		//Get reciprocal of FPS and output it - dividing by 'FPS' was outputting deltaTime so its now calculated at compile-time using static, not run-time
 		float reciprocalFPS = 1.0f / static_cast<float>(FPS);
-		DebugPrintF("FPS is %f \n", reciprocalFPS);
+		DebugPrintF("FPS is set to %f \n", reciprocalFPS);
 
 		// Update camera
 		float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);

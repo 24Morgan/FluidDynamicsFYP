@@ -7,6 +7,7 @@
 #include "Vector3.h"
 #include "Transform.h"
 #include "Appearance.h"
+#include "PhysicsModel.h"
 
 using namespace DirectX;
 using namespace std;
@@ -21,6 +22,7 @@ public:
 
 	Transform* GetTransform() const { return _transform; }
 	Appearance* GetAppearance() const { return _appearance; }
+	PhysicsModel* GetPhysicsModel() const { return _physicsModel; }
 
 	void Update(float t);
 	void Draw(ID3D11DeviceContext * pImmediateContext);
@@ -30,6 +32,7 @@ private:
 
 	Transform* _transform;
 	Appearance* _appearance;
+	PhysicsModel* _physicsModel;
 
 };
 
