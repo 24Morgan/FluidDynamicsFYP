@@ -14,7 +14,10 @@ public:
 
 	virtual void SetAcceleration(Vector3 newAcceleration);
 	virtual Vector3 GetAcceleration();
+
+	//Forces
 	virtual Vector3 GravityForce();
+	virtual void SimulateGravity(bool gravity) { _simulateGravity = gravity; }
 
 	void AddForce(Vector3 force);
 

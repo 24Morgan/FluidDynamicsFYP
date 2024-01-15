@@ -13,6 +13,7 @@ PhysicsModel::~PhysicsModel()
 void PhysicsModel::Update(float deltaTime)
 {
 	//May need an if check in the future as to not affect all objects
+	if (_simulateGravity)
 	_netForce += GravityForce();
 
 	//F = M*A
@@ -55,5 +56,5 @@ void PhysicsModel::AddForce(Vector3 force)
 
 Vector3 PhysicsModel::GravityForce() 
 { 
-	return _gravity; 
+	return _gravity * _mass; 
 }

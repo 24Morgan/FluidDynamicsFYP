@@ -1,6 +1,7 @@
 #include "Application.h"
 
-#define NUMBEROFCUBES 2
+#define NUMBEROFCUBES 1
+#define NUMBEROFSPHERES 3
 #define FPS 1.0f/60.0f
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -176,7 +177,8 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	
 	Appearance* _appearance = new Appearance(planeGeometry, noSpecMaterial);
 	Transform* _transform = new Transform();
-	GameObject* gameObject = new GameObject("Floor", _appearance, _transform);
+	PhysicsModel* _physics = new ParticleModel(_transform, 1.0f);
+	GameObject* gameObject = new GameObject("Floor", _appearance, _transform, _physics);
 	_transform->SetPosition(0.0f, 0.0f, 0.0f);
 	_transform->SetScale(15.0f, 15.0f, 15.0f);
 	_transform->SetRotation(XMConvertToRadians(90.0f), 0.0f, 0.0f);
@@ -184,11 +186,13 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	_gameObjects.push_back(gameObject);
 
+	//Cube world space initialisation
 	for (auto i = 0; i < NUMBEROFCUBES; i++)
 	{
 		_appearance = new Appearance(cubeGeometry, shinyMaterial);
 		_transform = new Transform();
-		gameObject = new GameObject("Cube " + to_string(i), _appearance, _transform);
+		_physics = new ParticleModel(_transform, 1.0f);
+		gameObject = new GameObject("Cube " + to_string(i), _appearance, _transform, _physics);
 		_transform->SetScale(1.0f, 1.0f, 1.0f);
 		_transform->SetPosition(-3.0f + (i * 2.5f), 1.0f, 10.0f);
 		_appearance->SetTextureRV(_pTextureRV);
@@ -197,22 +201,31 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	//Sphere world space initialisation
-	_appearance = new Appearance(sphereGeometry, noSpecMaterial);
-	_transform = new Transform();
-	gameObject = new GameObject("Sphere", _appearance, _transform);
-	_transform->SetScale(0.5f, 0.5f, 0.5f);
-	_transform->SetPosition(3.0f, 1.0f, 10.0f);
-	_appearance->SetTextureRV(_pTextureRV);
-	_gameObjects.push_back(gameObject);
+	for (auto i = 0; i < NUMBEROFSPHERES; i++)
+	{
+		_appearance = new Appearance(sphereGeometry, noSpecMaterial);
+		_transform = new Transform();
+		_physics = new ParticleModel(_transform, 1.0f);
+		gameObject = new GameObject("Sphere", _appearance, _transform, _physics);
+		gameObject->GetPhysicsModel()->SimulateGravity(true);
+		_transform->SetScale(0.5f, 0.5f, 0.5f);
+		_transform->SetPosition(3.0f + (i * 2.5f), 1.0f, 10.0f);
+		_appearance->SetTextureRV(_pTextureRV);
+		_gameObjects.push_back(gameObject);
+	}
 
 	//Donut world space initialisation
 	_appearance = new Appearance(donutGeometry, shinyMaterial);
 	_transform = new Transform();
-	gameObject = new GameObject("Donut", _appearance, _transform);
+	_physics = new ParticleModel(_transform, 1.0f);
+	gameObject = new GameObject("Donut", _appearance, _transform, _physics);
+	gameObject->GetPhysicsModel()->SimulateGravity(true);
 	_transform->SetScale(0.5f, 0.5f, 0.5f);
 	_transform->SetPosition(-6.0f, 0.5f, 10.0f);
 	_appearance->SetTextureRV(_pTextureRV);
 	_gameObjects.push_back(gameObject);
+
+	_gameObjects[1]->GetPhysicsModel()->SetVelocity(Vector3(0.0f, 1.0f, 0.0f));
 
 	return S_OK;
 }

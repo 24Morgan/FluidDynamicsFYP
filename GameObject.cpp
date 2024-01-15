@@ -1,8 +1,8 @@
 #include "GameObject.h"
 
-GameObject::GameObject(string type, Appearance* appearance, Transform* transform) : _type(type), _appearance(appearance), _transform(transform)
+GameObject::GameObject(string type, Appearance* appearance, Transform* transform, PhysicsModel* physics) : _type(type), _appearance(appearance), _transform(transform), _particleModel(physics)
 {
-	_particleModel = new ParticleModel(transform);
+
 }
 
 GameObject::~GameObject()
