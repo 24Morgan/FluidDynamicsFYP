@@ -12,6 +12,9 @@ PhysicsModel::~PhysicsModel()
 
 void PhysicsModel::Update(float deltaTime)
 {
+	//May need an if check in the future as to not affect all objects
+	_netForce += GravityForce();
+
 	//F = M*A
 	_acceleration += _netForce / _mass;
 	_velocity += _acceleration * deltaTime;
@@ -48,4 +51,9 @@ Vector3 PhysicsModel::GetAcceleration()
 void PhysicsModel::AddForce(Vector3 force)
 {
 	_netForce += force;
+}
+
+Vector3 PhysicsModel::GravityForce() 
+{ 
+	return _gravity; 
 }

@@ -19,6 +19,7 @@ public:
 	bool HasTexture() const { return _textureRV ? true : false; }
 
 private:
+	//Keeps a reference count to track total number of objects managed by pointers
 	std::shared_ptr<Geometry> _geometry;
 	std::shared_ptr <Material> _material;
 
