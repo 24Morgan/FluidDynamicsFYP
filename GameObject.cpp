@@ -1,6 +1,6 @@
 #include "GameObject.h"
 
-GameObject::GameObject(string type, Appearance* appearance, Transform* transform, PhysicsModel* physics) : _type(type), _appearance(appearance), _transform(transform), _particleModel(physics)
+GameObject::GameObject(string type, Appearance* appearance, Transform* transform, PhysicsModel* physics) : _type(type), _appearance(appearance), _transform(transform), _physicsModel(physics)
 {
 
 }
@@ -9,12 +9,12 @@ GameObject::~GameObject()
 {
 	delete _appearance;
 	delete _transform;
-	delete _particleModel;
+	delete _physicsModel;
 }
 
 void GameObject::Update(float t)
 {
-	_particleModel->Update(t);
+	_physicsModel->Update(t);
 	_transform->Update();
 }
 

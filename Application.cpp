@@ -1,7 +1,7 @@
 #include "Application.h"
 
 #define NUMBEROFCUBES 1
-#define NUMBEROFSPHERES 3
+#define NUMBEROFSPHERES 2
 #define FPS 1.0f/60.0f
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -131,15 +131,6 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	basicLight.SpecularLight = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 	basicLight.SpecularPower = 20.0f;
 	basicLight.LightVecW = XMFLOAT3(0.0f, 1.0f, -1.0f);
-
-
-	std::shared_ptr<Geometry> donutGeometry = std::make_shared<Geometry>();
-	objMeshData = OBJLoader::Load("Assets/3DModels/donut.obj", _pd3dDevice);
-	donutGeometry->indexBuffer = objMeshData.IndexBuffer;
-	donutGeometry->numberOfIndices = objMeshData.IndexCount;
-	donutGeometry->vertexBuffer = objMeshData.VertexBuffer;
-	donutGeometry->vertexBufferOffset = objMeshData.VBOffset;
-	donutGeometry->vertexBufferStride = objMeshData.VBStride;
 	
 	std::shared_ptr<Geometry> cubeGeometry = std::make_shared<Geometry>();
 	cubeGeometry->indexBuffer = _pIndexBuffer;
@@ -187,45 +178,35 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	_gameObjects.push_back(gameObject);
 
 	//Cube world space initialisation
-	for (auto i = 0; i < NUMBEROFCUBES; i++)
-	{
-		_appearance = new Appearance(cubeGeometry, shinyMaterial);
-		_transform = new Transform();
-		_physics = new ParticleModel(_transform, 1.0f);
-		gameObject = new GameObject("Cube " + to_string(i), _appearance, _transform, _physics);
-		_transform->SetScale(1.0f, 1.0f, 1.0f);
-		_transform->SetPosition(-3.0f + (i * 2.5f), 1.0f, 10.0f);
-		_appearance->SetTextureRV(_pTextureRV);
+	//for (auto i = 0; i < NUMBEROFCUBES; i++)
+	//{
+	//	_appearance = new Appearance(cubeGeometry, shinyMaterial);
+	//	_transform = new Transform();
+	//	_physics = new ParticleModel(_transform, 1.0f);
+	//	gameObject = new GameObject("Cube " + to_string(i), _appearance, _transform, _physics);
+	//	_transform->SetScale(1.0f, 1.0f, 1.0f);
+	//	_transform->SetPosition(-3.0f + (i * 2.5f), 1.0f, 10.0f);
+	//	_appearance->SetTextureRV(_pTextureRV);
 
-		_gameObjects.push_back(gameObject);
-	}
+	//	_gameObjects.push_back(gameObject);
+	//}
 
 	//Sphere world space initialisation
 	for (auto i = 0; i < NUMBEROFSPHERES; i++)
 	{
 		_appearance = new Appearance(sphereGeometry, noSpecMaterial);
 		_transform = new Transform();
-		_physics = new ParticleModel(_transform, 1.0f);
+		_physics = new RigidBodyModel(_transform, 1.0f);
 		gameObject = new GameObject("Sphere", _appearance, _transform, _physics);
-		gameObject->GetPhysicsModel()->SimulateGravity(true);
+		gameObject->GetPhysicsModel()->SimulateGravity(false);
 		_transform->SetScale(0.5f, 0.5f, 0.5f);
-		_transform->SetPosition(3.0f + (i * 2.5f), 1.0f, 10.0f);
+		_transform->SetPosition(-10.0 + (i * 20.0f), 1.0f, 10.0f);
 		_appearance->SetTextureRV(_pTextureRV);
 		_gameObjects.push_back(gameObject);
 	}
 
-	//Donut world space initialisation
-	_appearance = new Appearance(donutGeometry, shinyMaterial);
-	_transform = new Transform();
-	_physics = new ParticleModel(_transform, 1.0f);
-	gameObject = new GameObject("Donut", _appearance, _transform, _physics);
-	gameObject->GetPhysicsModel()->SimulateGravity(true);
-	_transform->SetScale(0.5f, 0.5f, 0.5f);
-	_transform->SetPosition(-6.0f, 0.5f, 10.0f);
-	_appearance->SetTextureRV(_pTextureRV);
-	_gameObjects.push_back(gameObject);
-
-	_gameObjects[1]->GetPhysicsModel()->SetVelocity(Vector3(0.0f, 1.0f, 0.0f));
+	_gameObjects[1]->GetPhysicsModel()->SetVelocity(Vector3(0.5f, 0.0f, 0.0f));
+	_gameObjects[2]->GetPhysicsModel()->SetVelocity(Vector3(-0.5f, 0.0f, 0.0f));
 
 	return S_OK;
 }

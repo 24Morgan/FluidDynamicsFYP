@@ -1,7 +1,7 @@
 #pragma once
 #include "Transform.h"
 
-class PhysicsModel
+class PhysicsModel abstract
 {
 public:
 	PhysicsModel(Transform* transform, float mass);
