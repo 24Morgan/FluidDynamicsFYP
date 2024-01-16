@@ -169,9 +169,9 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	//Floor
 	Appearance* _appearance = new Appearance(planeGeometry, noSpecMaterial);
 	Transform* _transform = new Transform();
-	PhysicsModel* _physics = new ParticleModel(_transform, 1.0f);
-	Collider* _sphereCollider = new SphereCollider(_transform, 0.0f);
-	GameObject* gameObject = new GameObject("Floor", _appearance, _transform, _physics);
+	RigidBodyModel* _rigidBody = new RigidBodyModel(_transform, 1.0f);
+	SphereCollider* _sphereCollider = new SphereCollider(_transform, 0.0f);
+	GameObject* gameObject = new GameObject("Floor", _appearance, _transform, _rigidBody);
 	_transform->SetPosition(0.0f, 0.0f, 0.0f);
 	_transform->SetScale(15.0f, 15.0f, 15.0f);
 	_transform->SetRotation(XMConvertToRadians(90.0f), 0.0f, 0.0f);
@@ -198,19 +198,19 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	{
 		_appearance = new Appearance(sphereGeometry, noSpecMaterial);
 		_transform = new Transform();
-		_physics = new RigidBodyModel(_transform, 1.0f);
-		_sphereCollider = new SphereCollider(_transform, 1.0f);
-		_physics->SetCollider(_sphereCollider);
-		gameObject = new GameObject("Sphere", _appearance, _transform, _physics);
+		_rigidBody = new RigidBodyModel(_transform, 1.0f);
+		_sphereCollider = new SphereCollider(_transform, 1.1f);	//Radius of sphere is roughly 2.5 - Take scale into account - Radius will be decreased to have a more fluid collision response
+		_rigidBody->SetCollider(_sphereCollider);
+		gameObject = new GameObject("Sphere", _appearance, _transform, _rigidBody);
 		gameObject->GetPhysicsModel()->SimulateGravity(false);
 		_transform->SetScale(0.5f, 0.5f, 0.5f);
-		_transform->SetPosition(-10.0 + (i * 20.0f), 1.0f, 10.0f);
+		_transform->SetPosition(-2.0 + (i * 4.0f), 1.0f, 10.0f);
 		_appearance->SetTextureRV(_pTextureRV);
 		_gameObjects.push_back(gameObject);
 	}
 
-	_gameObjects[1]->GetPhysicsModel()->SetVelocity(Vector3(3.0f, 0.0f, 0.0f));
-	_gameObjects[2]->GetPhysicsModel()->SetVelocity(Vector3(-3.0f, 0.0f, 0.0f));
+	_gameObjects[1]->GetPhysicsModel()->SetVelocity(Vector3(0.02f, 0.0f, 0.0f));
+	_gameObjects[2]->GetPhysicsModel()->SetVelocity(Vector3(-0.02f, 0.0f, 0.0f));
 
 	return S_OK;
 }
@@ -654,6 +654,7 @@ HRESULT Application::InitDevice()
 void Application::Cleanup()
 {
     if (_pImmediateContext) _pImmediateContext->ClearState();
+
 	if (_pSamplerLinear) _pSamplerLinear->Release();
 
 	if (_pTextureRV) _pTextureRV->Release();
@@ -683,20 +684,37 @@ void Application::Cleanup()
 	if (CCWcullMode) CCWcullMode->Release();
 	if (CWcullMode) CWcullMode->Release();
 
+	_pImmediateContext = nullptr;
+	_pSamplerLinear = nullptr;
+	_pTextureRV = nullptr;
+	_pGroundTextureRV = nullptr;
+	_depthStencilBuffer = nullptr; 
+	_depthStencilView = nullptr;   
+	RSCullNone = nullptr;
+	DSLessEqual = nullptr;
+	CCWcullMode = nullptr;
+	CWcullMode = nullptr;
+	_pConstantBuffer = nullptr;    
+
 	if (_camera)
 	{
 		delete _camera;
+		_camera = nullptr;
 	}
-
-	for (auto gameObject : _gameObjects)
+	if (_timer)
 	{
-		if (gameObject)
-		{
-			delete gameObject;
-		}
+		delete _timer;
+		_timer = nullptr;
 	}
 
-	delete _timer;
+    for (auto& gameObject : _gameObjects)
+    {
+        if (gameObject)
+        {
+            delete gameObject;
+            gameObject = nullptr;
+        }
+    }
 
 }
 
@@ -747,7 +765,7 @@ void Application::Update()
 		//Tests if two spheres intersect
 		if (_gameObjects[1]->GetPhysicsModel()->IsCollideable() && _gameObjects[2]->GetPhysicsModel()->IsCollideable())
 		{
-			if (_gameObjects[1]->GetPhysicsModel()->GetCollider()->CollidesWith(*_gameObjects[2]->GetPhysicsModel()->GetCollider()));
+			if (_gameObjects[1]->GetPhysicsModel()->GetCollider()->CollidesWith(*_gameObjects[2]->GetPhysicsModel()->GetCollider()))
 			{
 				DebugPrintF("Collision Between Objects 1 and 2!\n");
 			}
