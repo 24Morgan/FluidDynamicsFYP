@@ -201,13 +201,26 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 		_rigidBody = new RigidBodyModel(_transform, 1.0f);
 		_sphereCollider = new SphereCollider(_transform, 1.1f);	//Radius of sphere is roughly 2.5 - Take scale into account - Radius will be decreased to have a more fluid collision response
 		_rigidBody->SetCollider(_sphereCollider);
+		_rigidBody->SimulateGravity(false);
 		gameObject = new GameObject("Sphere", _appearance, _transform, _rigidBody);
-		gameObject->GetPhysicsModel()->SimulateGravity(false);
 		_transform->SetScale(0.5f, 0.5f, 0.5f);
 		_transform->SetPosition(-2.0 + (i * 4.0f), 1.0f, 10.0f);
 		_appearance->SetTextureRV(_pTextureRV);
 		_gameObjects.push_back(gameObject);
 	}
+
+	//Sphere to demonstrate gravity
+	_appearance = new Appearance(sphereGeometry, noSpecMaterial);
+	_transform = new Transform();
+	_rigidBody = new RigidBodyModel(_transform, 1.0f);
+	_sphereCollider = new SphereCollider(_transform, 1.1f);	
+	_rigidBody->SetCollider(_sphereCollider);
+	_rigidBody->SimulateGravity(true);
+	gameObject = new GameObject("Sphere", _appearance, _transform, _rigidBody);
+	_transform->SetScale(3.0f, 3.0f, 3.0f);
+	_transform->SetPosition(-0.0, 100.0f, 100.0f);
+	_appearance->SetTextureRV(_pTextureRV);
+	_gameObjects.push_back(gameObject);
 
 	_gameObjects[1]->GetPhysicsModel()->SetVelocity(Vector3(0.02f, 0.0f, 0.0f));
 	_gameObjects[2]->GetPhysicsModel()->SetVelocity(Vector3(-0.02f, 0.0f, 0.0f));
