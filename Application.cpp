@@ -166,9 +166,11 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	noSpecMaterial->specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	noSpecMaterial->specularPower = 0.0f;
 	
+	//Floor
 	Appearance* _appearance = new Appearance(planeGeometry, noSpecMaterial);
 	Transform* _transform = new Transform();
 	PhysicsModel* _physics = new ParticleModel(_transform, 1.0f);
+	Collider* _sphereCollider = new SphereCollider(_transform, 0.0f);
 	GameObject* gameObject = new GameObject("Floor", _appearance, _transform, _physics);
 	_transform->SetPosition(0.0f, 0.0f, 0.0f);
 	_transform->SetScale(15.0f, 15.0f, 15.0f);
@@ -197,6 +199,8 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 		_appearance = new Appearance(sphereGeometry, noSpecMaterial);
 		_transform = new Transform();
 		_physics = new RigidBodyModel(_transform, 1.0f);
+		_sphereCollider = new SphereCollider(_transform, 1.0f);
+		_physics->SetCollider(_sphereCollider);
 		gameObject = new GameObject("Sphere", _appearance, _transform, _physics);
 		gameObject->GetPhysicsModel()->SimulateGravity(false);
 		_transform->SetScale(0.5f, 0.5f, 0.5f);
@@ -205,8 +209,8 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 		_gameObjects.push_back(gameObject);
 	}
 
-	_gameObjects[1]->GetPhysicsModel()->SetVelocity(Vector3(0.5f, 0.0f, 0.0f));
-	_gameObjects[2]->GetPhysicsModel()->SetVelocity(Vector3(-0.5f, 0.0f, 0.0f));
+	_gameObjects[1]->GetPhysicsModel()->SetVelocity(Vector3(3.0f, 0.0f, 0.0f));
+	_gameObjects[2]->GetPhysicsModel()->SetVelocity(Vector3(-3.0f, 0.0f, 0.0f));
 
 	return S_OK;
 }
@@ -733,12 +737,25 @@ void Application::Update()
 			moveBackward(4);
 		}
 
-		//Output deltaTime
-		DebugPrintF("deltaTime is %f \n", accumulator);
+		////Output deltaTime
+		//DebugPrintF("deltaTime is %f \n", accumulator);
 
-		//Get reciprocal of FPS and output it - dividing by 'FPS' was outputting deltaTime so its now calculated at compile-time using static, not run-time
-		float reciprocalFPS = 1.0f / static_cast<float>(FPS);
-		DebugPrintF("FPS is set to %f \n", reciprocalFPS);
+		////Get reciprocal of FPS and output it - dividing by 'FPS' was outputting deltaTime so its now calculated at compile-time using static, not run-time
+		//float reciprocalFPS = 1.0f / static_cast<float>(FPS);
+		//DebugPrintF("FPS is set to %f \n", reciprocalFPS);
+
+		//Tests if two spheres intersect
+		if (_gameObjects[1]->GetPhysicsModel()->IsCollideable() && _gameObjects[2]->GetPhysicsModel()->IsCollideable())
+		{
+			if (_gameObjects[1]->GetPhysicsModel()->GetCollider()->CollidesWith(*_gameObjects[2]->GetPhysicsModel()->GetCollider()));
+			{
+				DebugPrintF("Collision Between Objects 1 and 2!\n");
+			}
+		}
+		else
+		{
+			DebugPrintF("Object Not Collideable!\n");
+		}
 
 		// Update camera
 		float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);

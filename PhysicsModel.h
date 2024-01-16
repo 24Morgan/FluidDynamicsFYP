@@ -1,5 +1,7 @@
 #pragma once
 #include "Transform.h"
+#include "Collider.h"
+#include "SphereCollider.h"
 
 class PhysicsModel abstract
 {
@@ -17,15 +19,21 @@ public:
 
 	//Forces
 	virtual Vector3 GravityForce();
-	virtual void SimulateGravity(bool gravity) { _simulateGravity = gravity; }
+	virtual void SimulateGravity(bool gravity);
 
 	void AddForce(Vector3 force);
+
+	//Collision handling
+	bool IsCollideable() const;
+	Collider* GetCollider() const;
+	void SetCollider(Collider* collider);
 
 private:
 
 
 protected:
 	Transform* _transform;
+	Collider* _collider = nullptr;
 
 	//Movement
 	Vector3 _velocity;

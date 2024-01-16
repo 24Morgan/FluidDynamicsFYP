@@ -2,12 +2,13 @@
 
 PhysicsModel::PhysicsModel(Transform* transform, float mass) : _transform(transform), _mass(mass)
 {
-
+	
 }
 
 PhysicsModel::~PhysicsModel()
 {
 	delete _transform;
+	delete _collider;
 }
 
 void PhysicsModel::Update(float deltaTime)
@@ -49,12 +50,32 @@ Vector3 PhysicsModel::GetAcceleration()
 	return _acceleration;
 }
 
+Vector3 PhysicsModel::GravityForce() 
+{ 
+	return _gravity * _mass; 
+}
+
+void PhysicsModel::SimulateGravity(bool gravity)
+{
+	_simulateGravity = gravity;
+}
+
 void PhysicsModel::AddForce(Vector3 force)
 {
 	_netForce += force;
 }
 
-Vector3 PhysicsModel::GravityForce() 
-{ 
-	return _gravity * _mass; 
+bool PhysicsModel::IsCollideable() const
+{
+	return _collider != nullptr;
+}
+
+Collider* PhysicsModel::GetCollider() const
+{
+	return _collider;
+}
+
+void PhysicsModel::SetCollider(Collider* collider)
+{
+	_collider = collider;
 }

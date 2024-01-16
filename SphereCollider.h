@@ -6,6 +6,7 @@ class SphereCollider : public Collider
 {
 public:
 	SphereCollider(Transform* transform, float radius);
+	virtual ~SphereCollider() override;
 
 	virtual bool CollidesWith(Collider& other) override;
 	virtual bool CollidesWith(SphereCollider& other) override;
