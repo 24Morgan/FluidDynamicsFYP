@@ -132,12 +132,12 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	basicLight.SpecularPower = 20.0f;
 	basicLight.LightVecW = XMFLOAT3(0.0f, 1.0f, -1.0f);
 	
-	std::shared_ptr<Geometry> cubeGeometry = std::make_shared<Geometry>();
-	cubeGeometry->indexBuffer = _pIndexBuffer;
-	cubeGeometry->vertexBuffer = _pVertexBuffer;
-	cubeGeometry->numberOfIndices = 36;
-	cubeGeometry->vertexBufferOffset = 0;
-	cubeGeometry->vertexBufferStride = sizeof(SimpleVertex);
+	//std::shared_ptr<Geometry> cubeGeometry = std::make_shared<Geometry>();
+	//cubeGeometry->indexBuffer = _pIndexBuffer;
+	//cubeGeometry->vertexBuffer = _pVertexBuffer;
+	//cubeGeometry->numberOfIndices = 36;
+	//cubeGeometry->vertexBufferOffset = 0;
+	//cubeGeometry->vertexBufferStride = sizeof(SimpleVertex);
 
 	std::shared_ptr<Geometry> sphereGeometry = std::make_shared<Geometry>();
 	objMeshData = OBJLoader::Load("Assets/3DModels/sphere.txt", _pd3dDevice);
@@ -204,6 +204,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 		_rigidBody->SimulateGravity(false);
 		gameObject = new GameObject("Sphere", _appearance, _transform, _rigidBody);
 		_transform->SetScale(0.5f, 0.5f, 0.5f);
+	/*	_transform->SetScale(Vector3(0.5f, 0.5f, 0.5f));*/
 		_transform->SetPosition(-2.0 + (i * 4.0f), 1.0f, 10.0f);
 		_appearance->SetTextureRV(_pTextureRV);
 		_gameObjects.push_back(gameObject);
@@ -768,12 +769,14 @@ void Application::Update()
 			moveBackward(4);
 		}
 
-		////Output deltaTime
-		//DebugPrintF("deltaTime is %f \n", accumulator);
+		//Output deltaTime
+		DebugPrintF("deltaTime is %f \n", accumulator);
 
-		////Get reciprocal of FPS and output it - dividing by 'FPS' was outputting deltaTime so its now calculated at compile-time using static, not run-time
-		//float reciprocalFPS = 1.0f / static_cast<float>(FPS);
-		//DebugPrintF("FPS is set to %f \n", reciprocalFPS);
+		//Get reciprocal of FPS and output it - dividing by 'FPS' was outputting deltaTime so its now calculated at compile-time using static, not run-time
+		/*float reciprocalFPS = 1.0f / static_cast<float>(FPS);
+		DebugPrintF("FPS is set to %f \n", reciprocalFPS);*/
+
+		
 
 		//Tests if two spheres intersect
 		if (_gameObjects[1]->GetPhysicsModel()->IsCollideable() && _gameObjects[2]->GetPhysicsModel()->IsCollideable())
@@ -781,6 +784,10 @@ void Application::Update()
 			if (_gameObjects[1]->GetPhysicsModel()->GetCollider()->CollidesWith(*_gameObjects[2]->GetPhysicsModel()->GetCollider()))
 			{
 				DebugPrintF("Collision Between Objects 1 and 2!\n");
+			}
+			else
+			{
+				DebugPrintF("No collision detected\n");
 			}
 		}
 		else

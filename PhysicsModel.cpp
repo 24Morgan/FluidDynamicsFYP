@@ -15,7 +15,7 @@ void PhysicsModel::Update(float deltaTime)
 {
 	//May need an if check in the future as to not affect all objects
 	if (_simulateGravity)
-	_netForce += GravityForce();
+	_netForce += GravityForce();	//Multiply by deltaTime for a slower descent
 
 	//F = M*A
 	_acceleration += _netForce / _mass;
