@@ -7,7 +7,6 @@ PhysicsModel::PhysicsModel(Transform* transform, float mass) : _transform(transf
 
 PhysicsModel::~PhysicsModel()
 {
-	delete _transform;
 	delete _collider;
 }
 

@@ -7,7 +7,6 @@ Appearance::Appearance(std::shared_ptr<Geometry> geometry, std::shared_ptr <Mate
 
 Appearance::~Appearance()
 {
-	delete _textureRV;
 	//Releases the managed object
 	_geometry.reset();
 	_material.reset();
