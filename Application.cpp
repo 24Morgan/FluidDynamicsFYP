@@ -1,7 +1,9 @@
 #include "Application.h"
 
 #define NUMBEROFCUBES 1
-#define NUMBEROFSPHERES 2
+#define NUMBEROFSPHERESX 10
+#define NUMBEROFSPHERESY 10
+#define NUMBEROFSPHERESZ 10
 #define FPS 1.0f/60.0f
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -119,9 +121,9 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	}
 
     // Setup Camera
-	XMFLOAT3 eye = XMFLOAT3(0.0f, 2.0f, -1.0f);
-	XMFLOAT3 at = XMFLOAT3(0.0f, 2.0f, 0.0f);
-	XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	XMFLOAT3 eye = XMFLOAT3(0.0f, 10.0f, -1.0f);	//Position of the camera
+	XMFLOAT3 at = XMFLOAT3(0.0f, 2.0f, 5.0f);	//Position camera is looking at
+	XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);	//Orientation of camera
 
 	_camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 200.0f);
 
@@ -194,20 +196,26 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	//}
 
 	//Sphere world space initialisation
-	for (auto i = 0; i < NUMBEROFSPHERES; i++)
+	for (auto i = 0; i < NUMBEROFSPHERESX; i++)
 	{
-		_appearance = new Appearance(sphereGeometry, noSpecMaterial);
-		_transform = new Transform();
-		_rigidBody = new RigidBodyModel(_transform, 1.0f);
-		_sphereCollider = new SphereCollider(_transform, 1.1f);	//Radius of sphere is roughly 2.5 - Take scale into account - Radius will be decreased to have a more fluid collision response
-		_rigidBody->SetCollider(_sphereCollider);
-		_rigidBody->SimulateGravity(false);
-		gameObject = new GameObject("Sphere", _appearance, _transform, _rigidBody);
-		_transform->SetScale(0.5f, 0.5f, 0.5f);
-	/*	_transform->SetScale(Vector3(0.5f, 0.5f, 0.5f));*/
-		_transform->SetPosition(-2.0 + (i * 4.0f), 1.0f, 10.0f);
-		_appearance->SetTextureRV(_pTextureRV);
-		_gameObjects.push_back(gameObject);
+		for (auto j = 0; j < NUMBEROFSPHERESY; j++)
+		{
+			for (auto k = 0; k < NUMBEROFSPHERESZ; k++)
+			{
+				_appearance = new Appearance(sphereGeometry, noSpecMaterial);
+				_transform = new Transform();
+				_rigidBody = new RigidBodyModel(_transform, 1.0f);
+				_sphereCollider = new SphereCollider(_transform, 1.1f);	//Radius of sphere is roughly 2.5 - Take scale into account - Radius will be decreased to have a more fluid collision response
+				_rigidBody->SetCollider(_sphereCollider);
+				_rigidBody->SimulateGravity(false);
+				gameObject = new GameObject("Sphere", _appearance, _transform, _rigidBody);
+				_transform->SetScale(0.5f, 0.5f, 0.5f);
+				/*	_transform->SetScale(Vector3(0.5f, 0.5f, 0.5f));*/
+				_transform->SetPosition(-8.0 + (i * 2.5f), 1.0f + (j * 2.5f), 10.0f + (k * 2.5f));
+				_appearance->SetTextureRV(_pTextureRV);
+				_gameObjects.push_back(gameObject);
+			}
+		}
 	}
 
 	//Sphere to demonstrate gravity
@@ -776,24 +784,31 @@ void Application::Update()
 		/*float reciprocalFPS = 1.0f / static_cast<float>(FPS);
 		DebugPrintF("FPS is set to %f \n", reciprocalFPS);*/
 
-		
 
-		//Tests if two spheres intersect
-		if (_gameObjects[1]->GetPhysicsModel()->IsCollideable() && _gameObjects[2]->GetPhysicsModel()->IsCollideable())
-		{
-			if (_gameObjects[1]->GetPhysicsModel()->GetCollider()->CollidesWith(*_gameObjects[2]->GetPhysicsModel()->GetCollider()))
-			{
-				DebugPrintF("Collision Between Objects 1 and 2!\n");
-			}
-			else
-			{
-				DebugPrintF("No collision detected\n");
-			}
-		}
-		else
-		{
-			DebugPrintF("Object Not Collideable!\n");
-		}
+		//for (int i = 0; i < _gameObjects.size(); i++)
+		//{
+		//	//Checks if object i is collideable
+		//	if (!_gameObjects[i]->GetPhysicsModel()->IsCollideable())
+		//	{
+		//		/*DebugPrintF("Object Not Collideable!\n");*/
+		//		continue;
+		//	}
+		//	for (int j = i + 1; j < _gameObjects.size(); j++)
+		//	{
+		//		//Checks if object j is collideable
+		//		if (!_gameObjects[j]->GetPhysicsModel()->IsCollideable())
+		//		{
+		//			/*DebugPrintF("Object Not Collideable!\n");*/
+		//			continue;
+		//		}
+
+		//		//Tests if two spheres intersect
+		//		if (_gameObjects[i]->GetPhysicsModel()->GetCollider()->CollidesWith(*_gameObjects[j]->GetPhysicsModel()->GetCollider()))
+		//		{
+		//			DebugPrintF("Collision Between Objects %d and %d!\n", i + 1, j + 1);
+		//		}
+		//	}
+		//}
 
 		// Update camera
 		float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);

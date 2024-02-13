@@ -24,7 +24,7 @@ public:
 
 	Transform* GetTransform() const { return _transform; }
 	Appearance* GetAppearance() const { return _appearance; }
-	PhysicsModel* GetPhysicsModel() const { return _physicsModel; }		//_particleModel may need to be swapped
+	PhysicsModel* GetPhysicsModel() const { return _physicsModel; }		//_physicsModel may need to be swapped
 
 	void Update(float t);
 	void Draw(ID3D11DeviceContext * pImmediateContext);
