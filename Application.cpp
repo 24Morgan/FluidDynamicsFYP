@@ -1,9 +1,9 @@
 #include "Application.h"
 
 #define NUMBEROFCUBES 1
-#define NUMBEROFSPHERESX 10
-#define NUMBEROFSPHERESY 10
-#define NUMBEROFSPHERESZ 10
+#define NUMBEROFSPHERESX 5
+#define NUMBEROFSPHERESY 5
+#define NUMBEROFSPHERESZ 5
 #define FPS 1.0f/60.0f
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -32,6 +32,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 bool Application::HandleKeyboard(MSG msg)
 {
 	XMFLOAT3 cameraPosition = _camera->GetPosition();
+	static bool gravityEnabled = false; //Static bool to track if gravity is enabled
 
 	switch (msg.wParam)
 	{
@@ -52,6 +53,26 @@ bool Application::HandleKeyboard(MSG msg)
 
 	case VK_LEFT:
 		_cameraOrbitAngleXZ += _cameraSpeed;
+		return true;
+		break;
+
+	case VK_CONTROL:
+		gravityEnabled = !gravityEnabled; //Toggle gravity
+		for (auto& gameObject : _gameObjects) 
+		{
+			if (gravityEnabled) 
+			{
+				gameObject->GetPhysicsModel()->SimulateGravity();
+			}
+		}
+		return true;
+		break;
+
+	case VK_SPACE:
+		for (auto& gameObject : _gameObjects)
+		{
+			gameObject->GetPhysicsModel()->SetVelocity(Vector3(0.0f, 5.0f, 0.0f));
+		}
 		return true;
 		break;
 	}
@@ -174,6 +195,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	RigidBodyModel* _rigidBody = new RigidBodyModel(_transform, 1.0f);
 	SphereCollider* _sphereCollider = new SphereCollider(_transform, 0.0f);
 	GameObject* gameObject = new GameObject("Floor", _appearance, _transform, _rigidBody);
+	_rigidBody->SimulateGravity(false);
 	_transform->SetPosition(0.0f, 0.0f, 0.0f);
 	_transform->SetScale(15.0f, 15.0f, 15.0f);
 	_transform->SetRotation(XMConvertToRadians(90.0f), 0.0f, 0.0f);
@@ -206,12 +228,12 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 				_transform = new Transform();
 				_rigidBody = new RigidBodyModel(_transform, 1.0f);
 				_sphereCollider = new SphereCollider(_transform, 1.1f);	//Radius of sphere is roughly 2.5 - Take scale into account - Radius will be decreased to have a more fluid collision response
+				gameObject = new GameObject("Sphere", _appearance, _transform, _rigidBody);
 				_rigidBody->SetCollider(_sphereCollider);
 				_rigidBody->SimulateGravity(false);
-				gameObject = new GameObject("Sphere", _appearance, _transform, _rigidBody);
 				_transform->SetScale(0.5f, 0.5f, 0.5f);
 				/*	_transform->SetScale(Vector3(0.5f, 0.5f, 0.5f));*/
-				_transform->SetPosition(-8.0 + (i * 2.5f), 1.0f + (j * 2.5f), 10.0f + (k * 2.5f));
+				_transform->SetPosition(-8.0 + (i * 2.5f), 1.0f + (j * 2.5f), 0.0f + (k * 2.5f));
 				_appearance->SetTextureRV(_pTextureRV);
 				_gameObjects.push_back(gameObject);
 			}

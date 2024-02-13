@@ -20,6 +20,7 @@ public:
 	//Forces
 	virtual Vector3 GravityForce();
 	virtual void SimulateGravity(bool gravity);
+	virtual void SimulateGravity();
 
 	void AddForce(Vector3 force);
 

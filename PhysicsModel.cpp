@@ -59,6 +59,11 @@ void PhysicsModel::SimulateGravity(bool gravity)
 	_simulateGravity = gravity;
 }
 
+void PhysicsModel::SimulateGravity()
+{
+	_simulateGravity = !_simulateGravity;
+}
+
 void PhysicsModel::AddForce(Vector3 force)
 {
 	_netForce += force;
