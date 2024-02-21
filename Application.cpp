@@ -1,10 +1,10 @@
 #include "Application.h"
 
 #define NUMBEROFCUBES 1
-#define NUMBEROFSPHERESX 5
-#define NUMBEROFSPHERESY 5
-#define NUMBEROFSPHERESZ 5
-#define FPS 1.0f/30.0f
+#define NUMBEROFSPHERESX 7
+#define NUMBEROFSPHERESY 7
+#define NUMBEROFSPHERESZ 7
+#define FPS 1.0f/10.0f
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -71,7 +71,7 @@ bool Application::HandleKeyboard(MSG msg)
 	case VK_SPACE:
 		for (auto& gameObject : _gameObjects)
 		{
-			gameObject->GetPhysicsModel()->SetVelocity(Vector3(0.0f, 5.0f, 0.0f));
+			gameObject->GetPhysicsModel()->SetVelocity(Vector3(0.0f, 0.0f, 0.0f));
 		}
 		return true;
 		break;
@@ -232,26 +232,26 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	//}
 
 	//Sphere world space initialisation
-	for (auto i = 0; i < 3; i++)
-	{
-		for (auto j = 0; j < 3; j++)
-		{
-			for (auto k = 0; k < 3; k++)
-			{
-				_appearance = new Appearance(sphereGeometry, noSpecMaterial);
-				_transform = new Transform();
-				_particle = new ParticleModel(_transform, 1.0f);
-				_sphereCollider = new SphereCollider(_transform, 2.5f);	//Radius of sphere is roughly 2.5 - Take scale into account - Radius will be decreased to have a more fluid collision response
-				gameObject = new GameObject("Sphere " , _appearance, _transform, _particle);
-				_particle->SimulateGravity(false);
-				_particle->SetCollider(_sphereCollider);
-				_transform->SetScale(1.0f, 1.0f, 1.0f);
-				_transform->SetPosition(-15.0f + (i * 7.5f), -15.0f + (j * 7.5f), 20.0f + (k * 7.5f));
-				_appearance->SetTextureRV(_pTextureRV);
-				_gameObjects.push_back(gameObject);
-			}
-		}
-	}
+	//for (auto i = 0; i < 3; i++)
+	//{
+	//	for (auto j = 0; j < 3; j++)
+	//	{
+	//		for (auto k = 0; k < 3; k++)
+	//		{
+	//			_appearance = new Appearance(sphereGeometry, noSpecMaterial);
+	//			_transform = new Transform();
+	//			_particle = new ParticleModel(_transform, 1.0f);
+	//			_sphereCollider = new SphereCollider(_transform, 2.5f);	//Radius of sphere is roughly 2.5 - Take scale into account - Radius will be decreased to have a more fluid collision response
+	//			gameObject = new GameObject("Sphere " , _appearance, _transform, _particle);
+	//			_particle->SimulateGravity(false);
+	//			_particle->SetCollider(_sphereCollider);
+	//			_transform->SetScale(1.0f, 1.0f, 1.0f);
+	//			_transform->SetPosition(-15.0f + (i * 7.5f), -15.0f + (j * 7.5f), 20.0f + (k * 7.5f));
+	//			_appearance->SetTextureRV(_pTextureRV);
+	//			_gameObjects.push_back(gameObject);
+	//		}
+	//	}
+	//}
 
 	//Sphere world space initialisation
 	for (auto i = 0; i < NUMBEROFSPHERESX; i++)
@@ -265,9 +265,9 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 				_particle = new ParticleModel(_transform, 1.0f);
 				_sphereCollider = new SphereCollider(_transform, 1.25f);	//Radius of sphere is roughly 2.5 - Take scale into account - Radius will be decreased to have a more fluid collision response
 				gameObject = new GameObject("Sphere ", _appearance, _transform, _particle);
-				_particle->SimulateGravity(true);
+				_particle->SimulateGravity(false);
 				_particle->SetCollider(_sphereCollider);
-				_transform->SetScale(0.5f, 0.5f, 0.5f);
+				_transform->SetScale(0.2f, 0.2f, 0.2f);
 				/*	_transform->SetScale(Vector3(0.5f, 0.5f, 0.5f));*/
 				_transform->SetPosition(-23.0f + (i * 5.0f), 20.0f + (j * 20.0f), 8.0f + (k * 5.0f));
 				_appearance->SetTextureRV(_pTextureRV);
@@ -279,13 +279,13 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	//Sphere to demonstrate gravity
 	_appearance = new Appearance(sphereGeometry, noSpecMaterial);
 	_transform = new Transform();
-	_rigidBody = new RigidBodyModel(_transform, 1.0f);
+	_particle = new ParticleModel(_transform, 5.0f);
 	_sphereCollider = new SphereCollider(_transform, 1.1f);	
-	_rigidBody->SetCollider(_sphereCollider);
-	_rigidBody->SimulateGravity(true);
-	gameObject = new GameObject("Sphere", _appearance, _transform, _rigidBody);
+	_particle->SetCollider(_sphereCollider);
+	_particle->SimulateGravity(false);
+	gameObject = new GameObject("Sphere", _appearance, _transform, _particle);
 	_transform->SetScale(3.0f, 3.0f, 3.0f);
-	_transform->SetPosition(-0.0, 100.0f, 100.0f);
+	_transform->SetPosition(-0.0, 100.0f, 15.0f);
 	_appearance->SetTextureRV(_pTextureRV);
 	_gameObjects.push_back(gameObject);
 
@@ -805,6 +805,7 @@ void Application::moveBackward(int objectNumber)
 	_gameObjects[objectNumber-2]->GetPhysicsModel()->AddForce(Vector3(0, 0, 1.0f));
 }
 
+
 void Application::Update()
 {
 	//Update time
@@ -839,51 +840,8 @@ void Application::Update()
 		/*float reciprocalFPS = 1.0f / static_cast<float>(FPS);
 		DebugPrintF("FPS is set to %f \n", reciprocalFPS);*/
 
+		CollisionResponse();
 
-		for (int i = 0; i < _gameObjects.size(); i++)
-		{
-			//Checks if object i is collideable
-			if (!_gameObjects[i]->GetPhysicsModel()->IsCollideable())
-			{
-				/*DebugPrintF("Object Not Collideable!\n");*/
-				continue;
-			}
-			for (int j = i + 1; j < _gameObjects.size(); j++)
-			{
-				//Checks if object j is collideable
-				if (!_gameObjects[j]->GetPhysicsModel()->IsCollideable())
-				{
-					/*DebugPrintF("Object Not Collideable!\n");*/
-					continue;
-				}
-				//Tests if two spheres intersect
-				if (_gameObjects[i]->GetPhysicsModel()->GetCollider()->CollidesWith(*_gameObjects[j]->GetPhysicsModel()->GetCollider()) || 
-					_gameObjects[i]->GetTransform()->GetPosition().y < -20.0f)
-				{
-					Vector3 collisionNormal = (_gameObjects[i]->GetTransform()->GetPosition() - _gameObjects[j]->GetTransform()->GetPosition());
-					collisionNormal.Normalize();
-					//Coefficient of restitution - elasticity of collision - adjust value if needed
-					float restitution = 0.5;
-
-					Vector3 relativeVelocity = (_gameObjects[i]->GetPhysicsModel()->GetVelocity() - _gameObjects[j]->GetPhysicsModel()->GetVelocity());
-
-					//Checks particles are approaching each other
-					if (collisionNormal * relativeVelocity < 0.0f)
-					{
-						//Calculates magnitude of impulse
-						float vj = -(1 + restitution) * collisionNormal * relativeVelocity;
-
-						//Calculates size of impulse
-						float J = vj * (-_gameObjects[i]->GetPhysicsModel()->GetMass() + -_gameObjects[j]->GetPhysicsModel()->GetMass());
-
-						_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(-_gameObjects[i]->GetPhysicsModel()->GetMass() * J * collisionNormal);
-						_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(-(-_gameObjects[j]->GetPhysicsModel()->GetMass() * J * collisionNormal));
-					}
-
-					DebugPrintF("Collision Between Objects %d and %d!\n", i + 1, j + 1);
-				}
-			}
-		}
 
 		// Update camera
 		float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
@@ -907,6 +865,82 @@ void Application::Update()
 		// Update our time
 		_timer->Tick();
 		accumulator -= FPS;
+	}
+}
+
+void Application::CollisionResponse()
+{
+	for (int i = 0; i < _gameObjects.size(); i++)
+	{
+		//Checks if object i is collideable
+		if (!_gameObjects[i]->GetPhysicsModel()->IsCollideable())
+		{
+			/*DebugPrintF("Object Not Collideable!\n");*/
+			continue;
+		}
+		//Boundary conditions
+		if (_gameObjects[i]->GetTransform()->GetPosition().y < -10.0f)			//If particle hits bottom boundary
+			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(0.1, 0.1, 0) - _gameObjects[i]->GetPhysicsModel()->GravityForce());
+		if (_gameObjects[i]->GetTransform()->GetPosition().y > 20.0f)			//If particle hits top boundary
+			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(-0.1, -0.1, 0));
+		if (_gameObjects[i]->GetTransform()->GetPosition().x < -25.0f)			//If particle hits left boundary
+			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(0.1, 0, 0));
+		if (_gameObjects[i]->GetTransform()->GetPosition().x > 0.0f)			//If particle hits right boundary
+			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(-0.1, 0, 0));
+		if (_gameObjects[i]->GetTransform()->GetPosition().z < 6.0f)			//If particle hits right boundary
+			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(0, 0, 0.1));
+		if (_gameObjects[i]->GetTransform()->GetPosition().z > 30.0f)			//If particle hits right boundary
+			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(0, 0, -0.1));
+
+		for (int j = i + 1; j < _gameObjects.size(); j++)
+		{
+			//Checks if object j is collideable
+			if (!_gameObjects[j]->GetPhysicsModel()->IsCollideable())
+			{
+				/*DebugPrintF("Object Not Collideable!\n");*/
+				continue;
+			}
+
+			//Boundary conditions
+			//if (_gameObjects[j]->GetTransform()->GetPosition().y < -10.0f)			//If particle hits bottom boundary
+			//	_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(Vector3(0, 0.1, 0.1));
+			//if (_gameObjects[i]->GetTransform()->GetPosition().y > 10.0f)			//If particle hits top boundary
+			//	_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(-0.1, -0.1, 0));
+			//if (_gameObjects[j]->GetTransform()->GetPosition().x < -25.0f)			//If particle hits left boundary
+			//	_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(Vector3(0.1, 0, 0));
+			//if (_gameObjects[j]->GetTransform()->GetPosition().x > 0.0f)			//If particle hits right boundary
+			//	_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(Vector3(-0.1, 0, 0));
+			//if (_gameObjects[j]->GetTransform()->GetPosition().z < 6.0f)			//If particle hits right boundary
+			//	_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(Vector3(0, 0, 0.1));
+			//if (_gameObjects[j]->GetTransform()->GetPosition().z > 30.0f)			//If particle hits right boundary
+			//	_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(Vector3(0, 0, -0.1));
+
+			//Tests if two spheres intersect
+			if (_gameObjects[i]->GetPhysicsModel()->GetCollider()->CollidesWith(*_gameObjects[j]->GetPhysicsModel()->GetCollider()))
+			{
+				Vector3 collisionNormal = (_gameObjects[i]->GetTransform()->GetPosition() - _gameObjects[j]->GetTransform()->GetPosition());
+				collisionNormal.Normalize();
+				//Coefficient of restitution - elasticity of collision - adjust value if needed
+				float restitution = 0.0;
+
+				Vector3 relativeVelocity = (_gameObjects[i]->GetPhysicsModel()->GetVelocity() - _gameObjects[j]->GetPhysicsModel()->GetVelocity());
+
+				//Checks particles are approaching each other
+				if (collisionNormal * relativeVelocity < 0.0f)
+				{
+					//Calculates magnitude of impulse
+					float vj = -(1 + restitution) * collisionNormal * relativeVelocity;
+
+					//Calculates size of impulse
+					float J = vj * (-_gameObjects[i]->GetPhysicsModel()->GetMass() + -_gameObjects[j]->GetPhysicsModel()->GetMass());
+
+					_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(-_gameObjects[i]->GetPhysicsModel()->GetMass() * J * collisionNormal);
+					_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(-(-_gameObjects[j]->GetPhysicsModel()->GetMass() * J * collisionNormal));
+				}
+
+				DebugPrintF("Collision Between Objects %d and %d!\n", i + 1, j + 1);
+			}
+		}
 	}
 }
 
