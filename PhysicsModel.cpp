@@ -49,6 +49,11 @@ Vector3 PhysicsModel::GetAcceleration()
 	return _acceleration;
 }
 
+float PhysicsModel::GetMass()
+{
+	return _mass;
+}
+
 Vector3 PhysicsModel::GravityForce() 
 { 
 	return _gravity * _mass; 
@@ -82,4 +87,9 @@ Collider* PhysicsModel::GetCollider() const
 void PhysicsModel::SetCollider(Collider* collider)
 {
 	_collider = collider;
+}
+
+void PhysicsModel::ApplyImpulse(Vector3 impulse)
+{
+	_velocity += impulse;
 }

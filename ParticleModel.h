@@ -8,5 +8,8 @@ public:
 	virtual ~ParticleModel() override;
 
 	virtual void Update(float deltaTime) override;
+
+private:
+	float _viscosity = 0.99f;
 };
 

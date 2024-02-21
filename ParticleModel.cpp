@@ -12,5 +12,7 @@ ParticleModel::~ParticleModel()
 
 void ParticleModel::Update(float deltaTime)
 {
+	//Viscosity slightly decreases velocity each tick to mimic a viscous fluid
+	_velocity *= _viscosity;
 	PhysicsModel::Update(deltaTime);
 }

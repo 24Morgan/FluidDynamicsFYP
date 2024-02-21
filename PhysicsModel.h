@@ -17,17 +17,20 @@ public:
 	virtual void SetAcceleration(Vector3 newAcceleration);
 	virtual Vector3 GetAcceleration();
 
+	virtual float GetMass();
+
 	//Forces
 	virtual Vector3 GravityForce();
 	virtual void SimulateGravity(bool gravity);
 	virtual void SimulateGravity();
 
-	void AddForce(Vector3 force);
+	virtual void AddForce(Vector3 force);
 
 	//Collision handling
-	bool IsCollideable() const;
-	Collider* GetCollider() const;
-	void SetCollider(Collider* collider);
+	virtual bool IsCollideable() const;
+	virtual Collider* GetCollider() const;
+	virtual void SetCollider(Collider* collider);
+	virtual void ApplyImpulse(Vector3 impulse);
 
 private:
 
@@ -40,7 +43,7 @@ protected:
 	Vector3 _velocity;
 	Vector3 _acceleration;
 	Vector3 _netForce;	//Tracks total force applied to object
-	Vector3 _gravity = Vector3(0.0f, -9.81f, 0.0f);	//Applies gravity in negative y
+	Vector3 _gravity = Vector3(0.0f, -3.00f, 0.0f);	//Applies gravity in negative y - dampened to stop particles moving too quick
 	bool _simulateGravity = false;
 
 	//Physical properties
