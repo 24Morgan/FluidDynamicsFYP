@@ -13,7 +13,7 @@ public:
 	virtual bool CollidesWith(Collider& other) = 0;
 	virtual bool CollidesWith(SphereCollider& other) = 0;
 
-	Vector3 GetPosition() const;
+	virtual Vector3 GetPosition() const;
 
 protected:
 	Transform* _transform;

@@ -1,9 +1,9 @@
 #include "Application.h"
 
 #define NUMBEROFCUBES 1
-#define NUMBEROFSPHERESX 7
-#define NUMBEROFSPHERESY 7
-#define NUMBEROFSPHERESZ 7
+#define NUMBEROFSPHERESX 8
+#define NUMBEROFSPHERESY 8
+#define NUMBEROFSPHERESZ 8
 #define FPS 1.0f/10.0f
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -262,12 +262,12 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 			{
 				_appearance = new Appearance(sphereGeometry, noSpecMaterial);
 				_transform = new Transform();
-				_particle = new ParticleModel(_transform, 1.0f);
+				_particle = new ParticleModel(_transform, 0.2f);
 				_sphereCollider = new SphereCollider(_transform, 1.25f);	//Radius of sphere is roughly 2.5 - Take scale into account - Radius will be decreased to have a more fluid collision response
 				gameObject = new GameObject("Sphere ", _appearance, _transform, _particle);
 				_particle->SimulateGravity(false);
 				_particle->SetCollider(_sphereCollider);
-				_transform->SetScale(0.2f, 0.2f, 0.2f);
+				_transform->SetScale(0.3f, 0.3f, 0.3f);
 				/*	_transform->SetScale(Vector3(0.5f, 0.5f, 0.5f));*/
 				_transform->SetPosition(-23.0f + (i * 5.0f), 20.0f + (j * 20.0f), 8.0f + (k * 5.0f));
 				_appearance->SetTextureRV(_pTextureRV);
@@ -279,8 +279,8 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	//Sphere to demonstrate gravity
 	_appearance = new Appearance(sphereGeometry, noSpecMaterial);
 	_transform = new Transform();
-	_particle = new ParticleModel(_transform, 5.0f);
-	_sphereCollider = new SphereCollider(_transform, 1.1f);	
+	_particle = new ParticleModel(_transform, 3.0f);
+	_sphereCollider = new SphereCollider(_transform, 7.5f);	
 	_particle->SetCollider(_sphereCollider);
 	_particle->SimulateGravity(false);
 	gameObject = new GameObject("Sphere", _appearance, _transform, _particle);
@@ -880,12 +880,12 @@ void Application::CollisionResponse()
 		}
 		//Boundary conditions
 		if (_gameObjects[i]->GetTransform()->GetPosition().y < -10.0f)			//If particle hits bottom boundary
-			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(0.1, 0.1, 0) - _gameObjects[i]->GetPhysicsModel()->GravityForce());
+			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse((-_gameObjects[i]->GetPhysicsModel()->GravityForce()));
 		if (_gameObjects[i]->GetTransform()->GetPosition().y > 20.0f)			//If particle hits top boundary
-			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(-0.1, -0.1, 0));
-		if (_gameObjects[i]->GetTransform()->GetPosition().x < -25.0f)			//If particle hits left boundary
+			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(0, -0.1, 0));
+		if (_gameObjects[i]->GetTransform()->GetPosition().x < -15.0f)			//If particle hits left boundary
 			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(0.1, 0, 0));
-		if (_gameObjects[i]->GetTransform()->GetPosition().x > 0.0f)			//If particle hits right boundary
+		if (_gameObjects[i]->GetTransform()->GetPosition().x > 15.0f)			//If particle hits right boundary
 			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(-0.1, 0, 0));
 		if (_gameObjects[i]->GetTransform()->GetPosition().z < 6.0f)			//If particle hits right boundary
 			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(0, 0, 0.1));
@@ -901,28 +901,15 @@ void Application::CollisionResponse()
 				continue;
 			}
 
-			//Boundary conditions
-			//if (_gameObjects[j]->GetTransform()->GetPosition().y < -10.0f)			//If particle hits bottom boundary
-			//	_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(Vector3(0, 0.1, 0.1));
-			//if (_gameObjects[i]->GetTransform()->GetPosition().y > 10.0f)			//If particle hits top boundary
-			//	_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(-0.1, -0.1, 0));
-			//if (_gameObjects[j]->GetTransform()->GetPosition().x < -25.0f)			//If particle hits left boundary
-			//	_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(Vector3(0.1, 0, 0));
-			//if (_gameObjects[j]->GetTransform()->GetPosition().x > 0.0f)			//If particle hits right boundary
-			//	_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(Vector3(-0.1, 0, 0));
-			//if (_gameObjects[j]->GetTransform()->GetPosition().z < 6.0f)			//If particle hits right boundary
-			//	_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(Vector3(0, 0, 0.1));
-			//if (_gameObjects[j]->GetTransform()->GetPosition().z > 30.0f)			//If particle hits right boundary
-			//	_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(Vector3(0, 0, -0.1));
 
 			//Tests if two spheres intersect
 			if (_gameObjects[i]->GetPhysicsModel()->GetCollider()->CollidesWith(*_gameObjects[j]->GetPhysicsModel()->GetCollider()))
 			{
-				Vector3 collisionNormal = (_gameObjects[i]->GetTransform()->GetPosition() - _gameObjects[j]->GetTransform()->GetPosition());
-				collisionNormal.Normalize();
 				//Coefficient of restitution - elasticity of collision - adjust value if needed
 				float restitution = 0.0;
 
+				Vector3 collisionNormal = (_gameObjects[i]->GetTransform()->GetPosition() - _gameObjects[j]->GetTransform()->GetPosition());
+				collisionNormal.Normalize();
 				Vector3 relativeVelocity = (_gameObjects[i]->GetPhysicsModel()->GetVelocity() - _gameObjects[j]->GetPhysicsModel()->GetVelocity());
 
 				//Checks particles are approaching each other
