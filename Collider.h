@@ -1,7 +1,7 @@
 #pragma once
 #include "Transform.h"
 
-class SphereCollider;
+class ParticleCollider;
 
 //Parent class to manage different types of collisions between objects
 class Collider abstract
@@ -11,7 +11,7 @@ public:
 	virtual ~Collider();
 
 	virtual bool CollidesWith(Collider& other) = 0;
-	virtual bool CollidesWith(SphereCollider& other) = 0;
+	virtual bool CollidesWith(ParticleCollider& other) = 0;
 
 	virtual Vector3 GetPosition() const;
 

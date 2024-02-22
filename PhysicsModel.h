@@ -1,7 +1,7 @@
 #pragma once
 #include "Transform.h"
 #include "Collider.h"
-#include "SphereCollider.h"
+#include "ParticleCollider.h"
 
 class PhysicsModel abstract
 {

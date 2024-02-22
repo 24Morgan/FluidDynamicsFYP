@@ -162,13 +162,13 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	cubeGeometry->vertexBufferOffset = 0;
 	cubeGeometry->vertexBufferStride = sizeof(SimpleVertex);
 
-	std::shared_ptr<Geometry> sphereGeometry = std::make_shared<Geometry>();
+	std::shared_ptr<Geometry> particleGeometry = std::make_shared<Geometry>();
 	objMeshData = OBJLoader::Load("Assets/3DModels/sphere.txt", _pd3dDevice);
-	sphereGeometry->indexBuffer = objMeshData.IndexBuffer;
-	sphereGeometry->numberOfIndices = objMeshData.IndexCount;
-	sphereGeometry->vertexBuffer = objMeshData.VertexBuffer;
-	sphereGeometry->vertexBufferOffset = objMeshData.VBOffset;
-	sphereGeometry->vertexBufferStride = objMeshData.VBStride;
+	particleGeometry->indexBuffer = objMeshData.IndexBuffer;
+	particleGeometry->numberOfIndices = objMeshData.IndexCount;
+	particleGeometry->vertexBuffer = objMeshData.VertexBuffer;
+	particleGeometry->vertexBufferOffset = objMeshData.VBOffset;
+	particleGeometry->vertexBufferStride = objMeshData.VBStride;
 
 	std::shared_ptr<Geometry> planeGeometry = std::make_shared<Geometry>();
 	planeGeometry->indexBuffer = _pPlaneIndexBuffer;
@@ -189,84 +189,41 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	noSpecMaterial->specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	noSpecMaterial->specularPower = 0.0f;
 	
-	//Floor
-	//Appearance* _appearance = new Appearance(planeGeometry, noSpecMaterial);
-	//Transform* _transform = new Transform();
-	//RigidBodyModel* _rigidBody = new RigidBodyModel(_transform, 1.0f);
-	//SphereCollider* _sphereCollider = new SphereCollider(_transform, 0.0f);
-	//GameObject* gameObject = new GameObject("Floor", _appearance, _transform, _rigidBody);
-	//_rigidBody->SimulateGravity(false);
-	//_transform->SetPosition(0.0f, -10.0f, 0.0f);
-	//_transform->SetScale(15.0f, 15.0f, 15.0f);
-	//_transform->SetRotation(XMConvertToRadians(90.0f), 0.0f, 0.0f);
-	//_appearance->SetTextureRV(_pGroundTextureRV);
-	//_gameObjects.push_back(gameObject);
-
 
 	Appearance* _appearance;
 	Transform* _transform;
 	ParticleModel* _particle;
-	RigidBodyModel* _rigidBody;				//COMMENT THESE OUT WHEN USING FLOOR
-	SphereCollider* _sphereCollider;
+	RigidBodyModel* _rigidBody;
+	ParticleCollider* _particleCollider;
 	GameObject* gameObject;
-	//Cube world space initialisation
-	//for (auto i = 0; i < NUMBEROFSPHERESX; i++)
-	//{
-	//	for (auto j = 0; j < NUMBEROFSPHERESY; j++)
-	//	{
-	//		for (auto k = 0; k < NUMBEROFSPHERESZ; k++)
-	//		{
-	//			_appearance = new Appearance(cubeGeometry, shinyMaterial);
-	//			_transform = new Transform();
-	//			_particle = new ParticleModel(_transform, 1.0f);
-	//			_sphereCollider = new SphereCollider(_transform, 0.5f);
-	//			gameObject = new GameObject("Cube " + to_string(i), _appearance, _transform, _particle);
-	//			_particle->SetCollider(_sphereCollider);
-	//			_particle->SimulateGravity(false);
-	//			/*_transform->SetScale(0.5f, 0.5f, 0.5f); */
-	//			_transform->SetPosition(-8.0 + (i * 2.5f), -9.0f + (j * 2.5f), 10.0f + (k * 2.5f)); 
-	//			_appearance->SetTextureRV(_pTextureRV); 
-	//			_gameObjects.push_back(gameObject); 
-	//		}
-	//	}
-	//}
 
-	//Sphere world space initialisation
-	//for (auto i = 0; i < 3; i++)
-	//{
-	//	for (auto j = 0; j < 3; j++)
-	//	{
-	//		for (auto k = 0; k < 3; k++)
-	//		{
-	//			_appearance = new Appearance(sphereGeometry, noSpecMaterial);
-	//			_transform = new Transform();
-	//			_particle = new ParticleModel(_transform, 1.0f);
-	//			_sphereCollider = new SphereCollider(_transform, 2.5f);	//Radius of sphere is roughly 2.5 - Take scale into account - Radius will be decreased to have a more fluid collision response
-	//			gameObject = new GameObject("Sphere " , _appearance, _transform, _particle);
-	//			_particle->SimulateGravity(false);
-	//			_particle->SetCollider(_sphereCollider);
-	//			_transform->SetScale(1.0f, 1.0f, 1.0f);
-	//			_transform->SetPosition(-15.0f + (i * 7.5f), -15.0f + (j * 7.5f), 20.0f + (k * 7.5f));
-	//			_appearance->SetTextureRV(_pTextureRV);
-	//			_gameObjects.push_back(gameObject);
-	//		}
-	//	}
-	//}
+	//Particle to demonstrate gravity
+	_appearance = new Appearance(particleGeometry, noSpecMaterial);
+	_transform = new Transform();
+	_rigidBody = new RigidBodyModel(_transform, 3.0f);
+	_particleCollider = new ParticleCollider(_transform, 8.0f);	
+	_rigidBody->SetCollider(_particleCollider);
+	_rigidBody->SimulateGravity(false);
+	gameObject = new GameObject("Particle", _appearance, _transform, _rigidBody);
+	_transform->SetScale(3.0f, 3.0f, 3.0f);
+	_transform->SetPosition(-0.0, 0.0f, 15.0f);
+	_appearance->SetTextureRV(_pTextureRV);
+	_gameObjects.push_back(gameObject);
 
-	//Sphere world space initialisation
+	//Particle world space initialisation
 	for (auto i = 0; i < NUMBEROFSPHERESX; i++)
 	{
 		for (auto j = 0; j < NUMBEROFSPHERESY; j++)
 		{
 			for (auto k = 0; k < NUMBEROFSPHERESZ; k++)
 			{
-				_appearance = new Appearance(sphereGeometry, noSpecMaterial);
+				_appearance = new Appearance(particleGeometry, noSpecMaterial);
 				_transform = new Transform();
 				_particle = new ParticleModel(_transform, 0.2f);
-				_sphereCollider = new SphereCollider(_transform, 1.25f);	//Radius of sphere is roughly 2.5 - Take scale into account - Radius will be decreased to have a more fluid collision response
-				gameObject = new GameObject("Sphere ", _appearance, _transform, _particle);
+				_particleCollider = new ParticleCollider(_transform, 1.25f);	//Radius of particle is roughly 2.5 - Take scale into account - Radius will be decreased to have a more fluid collision response
+				gameObject = new GameObject("Particle ", _appearance, _transform, _particle);
 				_particle->SimulateGravity(false);
-				_particle->SetCollider(_sphereCollider);
+				_particle->SetCollider(_particleCollider);
 				_transform->SetScale(0.3f, 0.3f, 0.3f);
 				/*	_transform->SetScale(Vector3(0.5f, 0.5f, 0.5f));*/
 				_transform->SetPosition(-23.0f + (i * 5.0f), 20.0f + (j * 20.0f), 8.0f + (k * 5.0f));
@@ -275,19 +232,6 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 			}
 		}
 	}
-
-	//Sphere to demonstrate gravity
-	_appearance = new Appearance(sphereGeometry, noSpecMaterial);
-	_transform = new Transform();
-	_particle = new ParticleModel(_transform, 3.0f);
-	_sphereCollider = new SphereCollider(_transform, 7.5f);	
-	_particle->SetCollider(_sphereCollider);
-	_particle->SimulateGravity(false);
-	gameObject = new GameObject("Sphere", _appearance, _transform, _particle);
-	_transform->SetScale(3.0f, 3.0f, 3.0f);
-	_transform->SetPosition(-0.0, 100.0f, 15.0f);
-	_appearance->SetTextureRV(_pTextureRV);
-	_gameObjects.push_back(gameObject);
 
 	return S_OK;
 }
@@ -836,12 +780,7 @@ void Application::Update()
 		//Output deltaTime
 		DebugPrintF("deltaTime is %f \n", accumulator);
 
-		//Get reciprocal of FPS and output it - dividing by 'FPS' was outputting deltaTime so its now calculated at compile-time using static, not run-time
-		/*float reciprocalFPS = 1.0f / static_cast<float>(FPS);
-		DebugPrintF("FPS is set to %f \n", reciprocalFPS);*/
-
 		CollisionResponse();
-
 
 		// Update camera
 		float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
@@ -887,9 +826,9 @@ void Application::CollisionResponse()
 			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(0.1, 0, 0));
 		if (_gameObjects[i]->GetTransform()->GetPosition().x > 15.0f)			//If particle hits right boundary
 			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(-0.1, 0, 0));
-		if (_gameObjects[i]->GetTransform()->GetPosition().z < 6.0f)			//If particle hits right boundary
+		if (_gameObjects[i]->GetTransform()->GetPosition().z < 6.0f)			//If particle hits back boundary
 			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(0, 0, 0.1));
-		if (_gameObjects[i]->GetTransform()->GetPosition().z > 30.0f)			//If particle hits right boundary
+		if (_gameObjects[i]->GetTransform()->GetPosition().z > 30.0f)			//If particle hits front boundary
 			_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(Vector3(0, 0, -0.1));
 
 		for (int j = i + 1; j < _gameObjects.size(); j++)
@@ -902,7 +841,7 @@ void Application::CollisionResponse()
 			}
 
 
-			//Tests if two spheres intersect
+			//Tests if two particles intersect
 			if (_gameObjects[i]->GetPhysicsModel()->GetCollider()->CollidesWith(*_gameObjects[j]->GetPhysicsModel()->GetCollider()))
 			{
 				//Coefficient of restitution - elasticity of collision - adjust value if needed
@@ -920,8 +859,9 @@ void Application::CollisionResponse()
 
 					//Calculates size of impulse
 					float J = vj * (-_gameObjects[i]->GetPhysicsModel()->GetMass() + -_gameObjects[j]->GetPhysicsModel()->GetMass());
-
+					if (i != 0);
 					_gameObjects[i]->GetPhysicsModel()->ApplyImpulse(-_gameObjects[i]->GetPhysicsModel()->GetMass() * J * collisionNormal);
+					if (j != 1)
 					_gameObjects[j]->GetPhysicsModel()->ApplyImpulse(-(-_gameObjects[j]->GetPhysicsModel()->GetMass() * J * collisionNormal));
 				}
 

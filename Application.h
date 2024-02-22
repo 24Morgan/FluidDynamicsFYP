@@ -91,6 +91,7 @@ private:
 	void moveBackward(int objectNumber);
 
 	void CollisionResponse();
+
 public:
 	Application();
 	~Application();
