@@ -1,10 +1,10 @@
 #include "Application.h"
 
 #define NUMBEROFCUBES 1
-#define NUMBEROFSPHERESX 8
-#define NUMBEROFSPHERESY 8
-#define NUMBEROFSPHERESZ 8
-#define FPS 1.0f/10.0f
+#define NUMBEROFPARTICLESX 7
+#define NUMBEROFPARTICLESY 7
+#define NUMBEROFPARTICLESZ 7
+#define FPS 1.0f/20.0f
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -197,7 +197,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	ParticleCollider* _particleCollider;
 	GameObject* gameObject;
 
-	//Particle to demonstrate gravity
+	//Object to demonstrate inteference with particles
 	_appearance = new Appearance(particleGeometry, noSpecMaterial);
 	_transform = new Transform();
 	_rigidBody = new RigidBodyModel(_transform, 3.0f);
@@ -211,11 +211,11 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	_gameObjects.push_back(gameObject);
 
 	//Particle world space initialisation
-	for (auto i = 0; i < NUMBEROFSPHERESX; i++)
+	for (auto i = 0; i < NUMBEROFPARTICLESX; i++)
 	{
-		for (auto j = 0; j < NUMBEROFSPHERESY; j++)
+		for (auto j = 0; j < NUMBEROFPARTICLESY; j++)
 		{
-			for (auto k = 0; k < NUMBEROFSPHERESZ; k++)
+			for (auto k = 0; k < NUMBEROFPARTICLESZ; k++)
 			{
 				_appearance = new Appearance(particleGeometry, noSpecMaterial);
 				_transform = new Transform();

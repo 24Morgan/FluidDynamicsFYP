@@ -17,41 +17,41 @@ bool ParticleCollider::CollidesWith(Collider& other)
 
 bool ParticleCollider::CollidesWith(ParticleCollider& other)
 {
-	////Calculate the vector between the centre of both particles
-	//Vector3 centreDist = other.GetPosition() - GetPosition();
+	//Calculate the vector between the centre of both particles
+	Vector3 centreDist = other.GetPosition() - GetPosition();
 
-	////Calculates length of vector between particles
-	//float distance = centreDist.Magnitude();
+	//Calculates length of vector between particles
+	float distance = centreDist.Magnitude();
 
-	////Calculates the penetration distance - how much particles overlap
-	//float penetrationDist = GetRadius() + other.GetRadius() - distance;
+	//Calculates the penetration distance - how much particles overlap
+	float penetrationDist = GetRadius() + other.GetRadius() - distance;
 
-	////True only if particles overlap
-	//if (penetrationDist > 0.0f)
-	//{
-	//	//Calculates the penetration vector
-	//	centreDist.Normalize();
-	//	Vector3 penetrationVector = centreDist * penetrationDist;
-	//	//Moves one particle along the penetration vector by the penetration distance plus a gap
-	//	Vector3 newPosition = GetPosition() - penetrationVector * (penetrationDist + 0.1f);
-	//	_transform->SetPosition(newPosition);
-	//	return true;
-	//}
-	////Penetration distance lower than 0 meaning no overlap
-	//return false;
+	//True only if particles overlap
+	if (penetrationDist > 0.0f)
+	{
+		//Calculates the penetration vector
+		centreDist.Normalize();
+		Vector3 penetrationVector = centreDist * penetrationDist;
+		//Moves one particle along the penetration vector by the penetration distance plus a gap
+		Vector3 newPosition = GetPosition() - penetrationVector * (penetrationDist + 0.1f);
+		_transform->SetPosition(newPosition);
+		return true;
+	}
+	//Penetration distance lower than 0 meaning no overlap
+	return false;
 
 	//------------------------------------------------------------------------------------------
 	//BOTH METHODS OF COLLISION CHECK PRODUCE DIFFERENT OUTCOMES - TOP METHOD IS MORE CHAOTIC
 	//------------------------------------------------------------------------------------------
 
-	//Calculate the vector between the centre of both spheres
-	Vector3 centreDist = other.GetPosition() - GetPosition();
+	////Calculate the vector between the centre of both spheres
+	//Vector3 centreDist = other.GetPosition() - GetPosition();
 
-	//Calculates length of vector between spheres
-	float distance = centreDist.Magnitude();
+	////Calculates length of vector between spheres
+	//float distance = centreDist.Magnitude();
 
-	//Returns true if combined radii is greater than distance meaning they have overlapped
-	return distance < (GetRadius() + other.GetRadius());
+	////Returns true if combined radii is greater than distance meaning they have overlapped
+	//return distance < (GetRadius() + other.GetRadius());
 }
 
 float ParticleCollider::GetRadius() const

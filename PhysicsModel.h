@@ -43,7 +43,7 @@ protected:
 	Vector3 _velocity;
 	Vector3 _acceleration;
 	Vector3 _netForce;	//Tracks total force applied to object
-	Vector3 _gravity = Vector3(0.0f, -3.00f, 0.0f);	//Applies gravity in negative y - dampened to stop particles moving too quick
+	Vector3 _gravity = Vector3(0.0f, -9.82f, 0.0f);	//Applies gravity in negative y - dampened to stop particles moving too quick
 	bool _simulateGravity = false;
 
 	//Physical properties
