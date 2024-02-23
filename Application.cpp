@@ -845,7 +845,7 @@ void Application::CollisionResponse()
 			if (_gameObjects[i]->GetPhysicsModel()->GetCollider()->CollidesWith(*_gameObjects[j]->GetPhysicsModel()->GetCollider()))
 			{
 				//Coefficient of restitution - elasticity of collision - adjust value if needed
-				float restitution = 0.0;
+				float restitution = 0.0f;
 
 				Vector3 collisionNormal = (_gameObjects[i]->GetTransform()->GetPosition() - _gameObjects[j]->GetTransform()->GetPosition());
 				collisionNormal.Normalize();
@@ -855,7 +855,7 @@ void Application::CollisionResponse()
 				if (collisionNormal * relativeVelocity < 0.0f)
 				{
 					//Calculates magnitude of impulse
-					float vj = -(1 + restitution) * collisionNormal * relativeVelocity;
+					float vj = -(restitution) * collisionNormal * relativeVelocity;
 
 					//Calculates size of impulse
 					float J = vj * (-_gameObjects[i]->GetPhysicsModel()->GetMass() + -_gameObjects[j]->GetPhysicsModel()->GetMass());
